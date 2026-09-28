@@ -28,6 +28,7 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
+	base: '/museum/',
   },
   test: {
     globals: true,
