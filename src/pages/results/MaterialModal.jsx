@@ -341,7 +341,7 @@ export default function MaterialModal({ material, onClose }) {
               {/* round07h — OCR 이 없어도 **섹션을 숨기지 않는다**.
                   전체의 80%(archive 185,073건)가 OCR 0% 다. 숨기면 우단이 datadc 하나만
                   남아 2단 레이아웃이 무너진다. 「없다」는 것도 학예사에게 정보다. */}
-              <div className="detail_popup_ocr">
+              <div className="detail_popup_ocr mt-2.5">
 				<div className="detail_popup_ocr_title  mb-1.5">
 					<div className="flex items-end gap-1.5 title_top">
 						<strong className="text-[16px]">OCR</strong>

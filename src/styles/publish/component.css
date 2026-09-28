@@ -472,7 +472,7 @@
 .detail_popup_info_row { display: contents; }
 .detail_popup_info_term { font-size: 0.7rem; font-weight: 700; color: #333; letter-spacing: -0.016rem; }
 .detail_popup_info_desc { font-size: 0.7rem; font-weight: 400; color: #1a1a1a; }
-.detail_popup_desc { width: 100%; padding: .8rem; background: #fff; border-radius: 0.4rem; font-size: 0.7rem; font-weight: 400; line-height: 1.5; color: #333; letter-spacing: -0.016rem; }
+.detail_popup_desc { width: 100%; padding: .8rem; background: #fff; border-radius: 0.4rem; font-size: 0.7rem; font-weight: 400; line-height: 1.5; color: #333; letter-spacing: -0.016rem; flex : stretch }
 .detail_popup_license { flex-shrink: 0; display: flex; align-items: center; gap: 1.5rem; width: 100%; padding: .5rem 0.8rem 1.2rem 2rem; }
 .gallery_btn { text-indent : -9999px }
 .gallery_btn svg { stroke : #fff; width : 2rem; height : 2rem; }
