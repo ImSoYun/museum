@@ -41,7 +41,7 @@ export default function DataTable({
         // 폭 값은 퍼블의 .w_*p 유틸이 아니라 Tailwind 임의값으로 쓴다(§5.2.4 · §5.6 규칙 2).
         // 배열 길이는 (selectable ? 1 : 0) + columns.length 여야 한다.
         <colgroup>
-          {colWidths.map((w, i) => <col key={i} className={w} />)}
+          {colWidths.map((w, i) => <col key={i} className={w} width={w}/>)}
         </colgroup>
       )}
       <thead>

@@ -140,9 +140,17 @@ export default function Nodes() {
                 selectedIds={selectedIds}
                 onToggle={toggle}
                 onToggleAll={toggleAll}
+				colWidths={[
+					'40px',
+					'120px',
+					'120px',
+					'*',
+					'100px',
+					'120px',
+					'120px',
+				]}
               />
             </div>
-
             <Pagination page={page} totalPages={totalPages} onChange={setPage} />
           </div>
         </div>
