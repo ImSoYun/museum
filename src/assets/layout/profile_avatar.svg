@@ -1,0 +1,14 @@
+<svg preserveAspectRatio="none" width="40" height="40" overflow="visible" style="display: block;" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group 27">
+<circle id="Ellipse 1" cx="20" cy="20" r="20" fill="url(#paint0_linear_0_198)"/>
+<g id="Group">
+<path id="Vector" d="M22.6967 17.2988L19.9965 10L17.2963 17.2988L10 20L17.2963 22.7012L19.9965 30L22.6967 22.7012L30 20L22.6967 17.2988Z" fill="var(--fill-0, #FEFDFD)"/>
+</g>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_198" x1="40" y1="20" x2="0" y2="20" gradientUnits="userSpaceOnUse">
+<stop stop-color="#376DDD"/>
+<stop offset="1" stop-color="#1E3B77"/>
+</linearGradient>
+</defs>
+</svg>

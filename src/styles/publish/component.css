@@ -1,0 +1,1115 @@
+/* 이 파일의 책임: 퍼블리싱 정본 workspace/design/publish-v1/css/component.css 의 반입본(전량, v1 기준).
+   §5.6 규칙 4 — 읽기 전용에 준한다.
+   반입 시 적용한 교정:
+     L156 포커스링 #256ef4 → var(--focus-ring)  (§5.3 교정 4)
+     L51·69·92·110 아이콘 자산 경로 재설정 (§5.7-5)
+   .btn_primary_gra(L11)는 실납품 10화면·js/common.js 어디에서도 참조되지 않지만
+   "파일 단위 전량 반입"이 결정이므로 함께 들어온다. 한 줄만 도려내면
+   "퍼블 파일은 읽기 전용" 규칙이 첫 줄부터 깨진다(§5.2.2). 대신 리터럴
+   #192B9B·#4284F5는 --gra-from/--gra-to 토큰과 backgroundImage['primary-gra']로
+   흡수해 두었다 — 규칙이 들어오는 이상 리터럴이 토큰 체계 밖에 남는 게 더 나쁘다.
+
+   R6c-ext A1 — v2 component.css는 947줄(v1의 199줄에서 거의 5배)로 커졌다. chat_*·
+   node_view_*·node_detail_modal_*·library_card_*·rating_widget_* 등 이번 라운드(A~E)의
+   어떤 과업도 아직 그리지 않는 화면(AI 대화·노드 클러스터링·라이브러리 카드뷰·평점) 규칙이
+   대부분이라 "파일 단위 전량 반입"을 v2에는 적용하지 않는다 — 그러면 죽은 코드 947줄을
+   지금 끌고 오는 꼴이라 v1 때의 전량 반입 근거(§5.2.2, 파일을 읽기전용으로 지키기 위한
+   전량)가 성립하지 않는다. 대신 이번 라운드가 실제로 소비하는 그룹만 v2로 갱신한다
+   (아래 [S]/[E] 마커로 그룹 경계 표시, 이번에 손댄 곳만 "R6c-ext A1"을 주석에 남긴다):
+   .data_panel*·.data_table_group·.data_toolbar·.page_tabs*·.data_pagination*.
+   나머지 그룹(icon_btn·btn·card·alert_popup·form_group·select_box·tab_seg·notice_box·
+   form_check ty_02·data_filter_bar·data_table·template_bar·upload_dropzone·status_tag·
+   data_status_text·data_table_dl_btn)은 v1 그대로 유지한다 — v1·v2 사이에 값 차이가
+   있더라도 그 값을 쓰는 화면을 이번 라운드가 손대지 않아 정합을 검증할 수 없다.
+
+   R6c-ext D2a(자료관리 5탭 재퍼블) 후속 갱신 — 위 "나머지 그룹" 중 실제로 소비처를
+   갱신한 부분 클래스만 v2로 올렸다(그룹 전체를 v2로 바꾼 것이 아니라 각 [S]/[E] 안의
+   해당 줄만): data_filter_bar의 data_filter_search_input/data_filter_search_btn_icon
+   (소비처 DataFilterBar.jsx), upload_dropzone의 section_tit·upload_dropzone_btn_icon
+   (소비처 FileDropzone.jsx), template_bar의 section_tit(소비처 Meta.jsx). select_box는
+   그대로 v1 유지 — v2가 dropdown_box 위젯으로 갈아탄 부분이라 D1-7 선례(네이티브 select
+   유지)를 따라 이번에도 마이그레이션하지 않는다(각 그룹 안의 주석 참조).
+
+   R6c-ext D2b(시스템관리 셸 재퍼블) 후속 갱신 — 신규 그룹 3개를 v2에서 그대로 반입했다:
+   stat_card*(Monitoring.jsx KPI) · node_setting_bar*(Nodes.jsx 검색바) ·
+   data_filter_export_btn(Log.jsx 엑셀 다운로드). 기존 data_toolbar 그룹에는
+   .data_add_btn 한 줄만 추가했다(Nodes.jsx "클러스터링 기준 추가"). admin_log.html의
+   dropdown_box(기간·유형·부서 필터)는 D1-7·D2a 선례를 따라 스킵하고 select_box(v1,
+   네이티브 select)를 유지한다 — 상태(열림/닫힘) 있는 위젯을 이번 라운드 어떤 과업도
+   구현하지 않는다. admin_log.html의 tag.ty_act_*(활동유형 배지)·data_col_date·
+   data_col_muted·sub_txt도 반입하지 않는다 — "등록·역할·활동 변형은 미소비"라고
+   이미 못박은 [S] tag 주석과 같은 판단이며, Log.jsx는 그 값들을 plain text로 표시한다. */
+
+/* component.css : 버튼/모달/카드 등 재사용 컴포넌트 스타일 */
+/* 단위 규칙: border 1px 등 예외를 제외하고 rem 사용 (html/body font-size: 20px 기준, 1rem = 20px) */
+
+/* [S] icon_btn */
+.icon_btn { display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; border: 0; background: none; }
+/* [E] icon_btn */
+
+/* [S] btn */
+.btn_lg { width: 100%; height: 2.8rem; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 700; line-height: 1.5; }
+.btn_primary { background: var(--primary); color: #fff; }
+.btn_primary_border { border: 1px solid var(--primary); color: var(--primary);  }
+.btn_primary_gra { background: linear-gradient(92deg, #192B9B 0%, #4284F5 104.6%); color: #fff; }
+.btn_sm { height: 1.75rem; padding: 0 1rem; border-radius: 0.25rem; font-size: 0.7rem; font-weight: 600; }
+.btn_outline { background: #fff; border: 1px solid #ccc; color: #333; }
+.btn_outline_primary { background: #fff; border: 1px solid var(--primary); color: var(--primary); }
+/* R6F 후속(케밥 삭제 확인 재퍼블) — 퍼블 component.css:29 그대로 반입.
+   소비처 ConfirmPopup.jsx의 '아니오' 버튼(퍼블 #history_delete_cancel = btn_gray). */
+.btn_gray { background: rgba(0, 0, 0, .1); color: #999; }
+.btn_darkgray { background: #333333; color: #fff; }
+.btn_white { background : #fff; color : #222 } 
+
+.btn_open { background: #333333; color: #fff; }
+.btn_close { border: 1px solid #333333; color: #333; }
+
+
+/* [E] btn */
+
+/* [S] card */
+.card { width: 100%; max-width: 24rem; background: #fff; border-radius: 0.8rem; box-shadow: 0 0.2rem 0.7rem rgba(0, 0, 0, .11); padding: 1.2rem; display: flex; flex-direction: column; gap: 1.2rem; }
+.card .card_tit { font-size: 0.9rem; font-weight: 700; color: #1a1a1a; line-height: 1.3rem; }
+/* [E] card */
+
+/* [S] alert_popup */
+.alert_popup { display: none; position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 102; flex-direction: column; align-items: center; gap: 1.2rem; width: 24rem; max-width: 92vw; padding: 2rem; background: #fff; border-radius: 0.8rem; box-shadow: 0 0.1rem 1rem rgba(0, 0, 0, .15); }
+.alert_popup.is_active { display: flex; }
+.alert_popup_head { display: flex; flex-direction: column; align-items: center; gap: 0.8rem; width: 100%; text-align: center; }
+.alert_popup_tit { font-size: 1.2rem; font-weight: 700; color: #333; }
+.alert_popup_desc { font-size: 0.8rem; font-weight: 500; line-height: 1.5; color: #666; }
+.alert_popup .btn { width: 100%; }
+/* R6F 후속(케밥 삭제 확인 재퍼블) — 퍼블 component.css:47 그대로 반입.
+   소비처 ConfirmPopup.jsx의 삭제 대상 인용 줄(퍼블 #history_delete_quote). */
+.alert_popup_quote { width: 100%; padding: 0.8rem; background: var(--primary10); border-radius: 0.4rem; font-size: 0.8rem; font-weight: 600; color: #333; text-align: center; }
+/* [E] alert_popup */
+
+/* [S] popup_actions — alert_popup/form_popup 공용 하단 버튼 2개 가로 배치.
+   R6F 후속(케밥 삭제 확인 재퍼블) — 퍼블 component.css:52-55 그대로 반입(소비처
+   ConfirmPopup.jsx). ⚠️ 캐스케이드 위치가 계약이다: 위 .alert_popup .btn{width:100%}
+   (0,2,0)과 .popup_actions .btn(0,2,0)이 동점이라 퍼블처럼 popup_actions가 뒤에
+   와야 2버튼이 flex 반반이 된다 — 앞으로 옮기면 아니오/네가 세로로 쌓인다. */
+.popup_actions { display: flex; gap: 0.4rem; width: 100%; }
+.popup_actions .btn { width: auto; flex: 1 1 0; }
+/* [E] popup_actions */
+
+/* [S] form_group */
+.form_group { display: flex; flex-direction: column; gap: 0.2rem; width: 100%; }
+.form_group .form_label { font-size: 0.7rem; font-weight: 500; line-height: 1.5; color: #333; }
+.form_input { display: block; width: 100%; height: 2.25rem; padding: 0 0.8rem; border: 1px solid rgba(0, 0, 0, .12); border-radius: 0.4rem; background: #fff; font-size: 0.7rem; font-weight: 500; line-height: 1.5; color: #333; }
+.form_input::placeholder { color: #999; }
+.form_input_box { position: relative}
+.form_input_box .form_input{ padding-right: 2.8rem;}
+.form_input_box .ic_toggle { flex-shrink: 0; width: 1.2rem; height: 1.2rem; padding: 0; background: none; border: 0; color: #999; position: absolute; right: 0.8rem; top: 50%; transform: translateY(-50%)}
+.form_input_box .ic_toggle svg { display: none; width: 100%; height: 100%; }
+.form_input_box .ic_toggle .ic_eye_on { display: block; }
+.form_input_box .ic_toggle[aria-pressed="true"] { color: var(--primary); }
+.form_input_box .ic_toggle[aria-pressed="true"] .ic_eye_on { display: none; }
+.form_input_box .ic_toggle[aria-pressed="true"] .ic_eye_off { display: block; }
+.form_row_split { display: flex; gap: 0.8rem; width: 100%; }
+.form_row_split .form_group { flex: 1 1 0; min-width: 0; }
+.form_stack { display: flex; flex-direction: column; gap: 0.8rem; width: 100%; }
+.form_section { display: flex; flex-direction: column; gap: 1.2rem; width: 100%; }
+/* [E] form_group */
+
+/* [S] select_box */
+.select_box select { padding-right: 2rem; background: #fff url(../../assets/icons/ic_arrow_down.svg) no-repeat right 0.8rem center; background-size: 1.2rem; }
+.form_group .select_box { width: 100%; }
+.form_group .select_box select { width: 100%; }
+/* [E] select_box */
+
+/* [S] tab_seg */
+.tab_seg_menu { display: flex; gap: 0.2rem; padding: 0.2rem; background: rgba(0, 0, 0, .03); border-radius: 0.4rem; }
+.tab_seg_btn { flex: 1 1 0; display: flex; align-items: center; justify-content: center; padding: 0.4rem; border-radius: 0.2rem; font-size: 0.7rem; font-weight: 600; line-height: 1.5; color: #999; }
+.tab_seg_btn[aria-selected="true"] { background: #fff; color: var(--primary); }
+.tab_seg_panel[hidden] { display: none; }
+/* [E] tab_seg */
+
+/* [S] notice_box */
+.notice_box { width: 100%; padding: 0.4rem 0; border-radius: 0.4rem; background: rgba(27, 111, 255, .05); font-size: 0.7rem; font-weight: 400; line-height: 1.5; color: #666; text-align: center; }
+/* [E] notice_box */
+
+/* [S] form_check ty_02 */
+.form_check.ty_02 label:before { content: ""; width: 0.8rem; height: 0.8rem; border-radius: 0.2rem; border: solid 1px rgba(0, 0, 0, .12); background: #fff; display: inline-flex; flex-shrink: 0; }
+.form_check.ty_02 input[type=checkbox]:checked + label:before { background: var(--primary) url("../../assets/icons/ic_check.svg") no-repeat center / 55% auto; border-color: var(--primary); }
+/* [E] form_check */
+
+/* [S] page_tabs — R6c-ext A1: v2 갱신. v2는 a를 .page_tabs_link 명시 클래스로 바꾸고
+   z-index:2를 추가했다. 새 소비처(A3 PageTabs.jsx)는 .page_tabs_link를 쓴다. 이관 완료:
+   D2a가 ManageTabs.jsx에 className을 추가했고, D2b가 AdminTabs.jsx를 SystemTabs.jsx로
+   교체하며 같은 클래스를 반영했다 — 클래스 없는 NavLink 소비처는 이제 없다. */
+.page_tabs { display: flex; width: 100%; z-index: 2; }
+.page_tabs_link { flex: 1 1 0; display: flex; align-items: center; justify-content: center; gap: 0.6rem; height: 2.5rem; border: 1px solid rgba(255, 255, 255, .6); border-bottom: 0; border-radius: 0.8rem 0.8rem 0 0; background: rgba(204, 204, 204, .1); font-size: 1rem; font-weight: 600; color: #999; }
+.page_tabs_link[aria-current="page"] { background: #fff; color: var(--primary); font-weight: 700; }
+/* [E] page_tabs */
+
+/* [S] data_panel — v1 그대로 유지(클래스명 불변). v2는 이 그룹을 .panel_head.ty_border +
+   공용 .section_tit로 재구성했지만, 소비처 A3 DataPanel.jsx가 data_panel_head/
+   data_panel_tit/data_panel_desc를 그대로 쓰도록 고정 작성돼 있어(§4 디자인 참조 —
+   미참조 사유) v2 재구성을 따르지 않고 기존 클래스명을 유지한다. 값(폰트·색상·여백)은
+   v1·v2 동일하므로 실제 표시에는 차이가 없다. */
+.data_panel { width: 100%; filter: drop-shadow(0 0.2rem 0.5rem rgba(27, 111, 255, .2)); }
+.data_panel_body { width: 100%; background: #fff; border-radius: 0 0 0.8rem 0.8rem; padding: 1.2rem; display: flex; flex-direction: column; gap: 1.2rem; }
+.data_panel_head { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.2rem; border-bottom: 1px solid rgba(0, 0, 0, .12); }
+.data_panel_head .data_panel_tit { font-size: 1.2rem; font-weight: 700; color: #333; }
+.data_panel_head .data_panel_desc { margin-top: 0.5rem; font-size: 0.8rem; font-weight: 400; color: #333; }
+/* [E] data_panel */
+
+/* [S] data_filter_bar — D2a: input·아이콘을 v2 클래스 선택자로 갱신(data_filter_search_input·
+   data_filter_search_btn_icon, design/publish-v2/css/component.css:181-184 — 값은 옛
+   element 선택자와 동일해 회귀 없음). select_box는 갱신하지 않는다 — v2는 이 select들을
+   .dropdown_box(버튼+listbox, 상태를 가진 위젯)로 완전히 갈아탔는데, D1-7이 산출물화면의
+   "유형 선택"에서 같은 이유로 dropdown_box 구현을 스킵하고 네이티브 select를 유지한
+   선례를 그대로 따른다(§4 디자인 참조 — 미참조 사유, DataFilterBar.jsx 상단 주석과 동일
+   결정). select_box를 실제로 쓰는 소비처(DataFilterBar.jsx·Embedding.jsx 상태 필터·
+   Join.jsx)가 이번 라운드에도 여전히 select_box+select이므로 그 그룹은 v1 값 그대로
+   유지한다(overflow:hidden 포함 — v2가 이를 뺀 것은 dropdown_box 팝업이 잘리지 않게
+   하려는 목적이라 네이티브 select에는 해당하지 않는다). */
+.data_filter_bar { display: flex; align-items: center; width: 100%; border: 1px solid #ccc; border-radius: 0.4rem; overflow: hidden; }
+.data_filter_bar select:focus-visible,
+.data_filter_bar input:focus-visible { outline-offset: -2px; }
+.data_filter_bar .select_box { flex-shrink: 0; }
+.data_filter_bar .select_box select { width: 8rem; height: 2.25rem; border: 0; border-radius: 0; font-size: 0.7rem; color: #666; padding-left: 0.6rem; }
+.data_filter_bar .select_box select { background-image: url("../../assets/icons/ic_select_arrow.svg"); background-size: 1rem; }
+.data_filter_bar .data_filter_divider { flex-shrink: 0; width: 1px; height: 2.25rem; background: rgba(0, 0, 0, .12); }
+.data_filter_bar .data_filter_search { flex: 1 1 0; min-width: 0; display: flex; align-items: center; justify-content: space-between; height: 2.25rem; padding: 0 0.6rem 0 0.8rem; background: #f6f6f6; }
+.data_filter_bar .data_filter_search_input { flex: 1 1 auto; min-width: 0; border: 0; background: transparent; font-size: 0.7rem; color: #333; }
+.data_filter_bar .data_filter_search_input::placeholder { color: #999; }
+.data_filter_bar .data_filter_search_btn { width: 1.2rem; height: 1.2rem; }
+.data_filter_bar .data_filter_search_btn_icon { width: 100%; height: 100%; object-fit: contain; }
+/* [E] data_filter_bar */
+
+/* [S] data_table_group */
+.data_table_group { display: flex; flex-direction: column; gap: 0.8rem; width: 100%; }
+/* [E] data_table_group */
+
+/* [S] data_toolbar */
+.data_toolbar { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+.data_toolbar .data_total { font-size: 0.7rem; font-weight: 600; color: #333; }
+.data_toolbar .data_total b { color: var(--primary); font-weight: 600; margin: 0 0.2rem 0 0.4rem}
+.data_toolbar .data_delete_btn { height: 2rem; padding: 0 0.8rem; border: 0; border-radius: 0.25rem; font-size: 0.8rem; font-weight: 500; }
+/* D2b: admin_node.html의 "클러스터링 기준 추가" 버튼(data_add_btn) — 값은 design/
+   publish-v2/css/component.css:199 그대로(삭제 버튼과 크기·라운드·폰트가 같다, 색만
+   btn_primary가 담당). 소비처 Nodes.jsx. */
+.data_toolbar .data_add_btn { height: 2rem; padding: 0 0.8rem; border: 0; border-radius: 0.25rem; font-size: 0.8rem; font-weight: 500; }
+/* D2a 검토: v2 manage_embedding.html의 상태 필터는 select_box+select가 아니라
+   .dropdown_box.ty_labeled(버튼+listbox) 위젯이고, v2 component.css의 data_toolbar
+   그룹에는 이 select_box 규칙 자체가 없다(그룹 전체가 select_box 개념을 안 쓴다).
+   그런데도 이 규칙을 남기는 이유 — 유일 소비처 Embedding.jsx(상태 필터)가 이번에도
+   네이티브 select를 유지하기 때문이다(위 [S] data_filter_bar 주석·DataFilterBar.jsx
+   상단 주석과 동일 결정 — dropdown_box는 상태 있는 위젯이라 이번 라운드 범위 밖). */
+.data_toolbar .select_box select { width: 8rem; height: 2rem; border: 1px solid #ccc; border-radius: 0.25rem; padding-left: 0.6rem; font-size: 0.7rem; color: #666; background-color: #fff; background-image: url("../../assets/icons/ic_select_arrow.svg"); background-size: 1rem; }
+.data_toolbar .data_delete_btn:disabled { background: #999; cursor: not-allowed; }
+.data_toolbar .data_delete_count { display: flex; align-items: center; justify-content: center; width: 0.8rem; height: 0.8rem; border-radius: 50%; background: #fff; color: var(--primary); font-size: 0.65rem; }
+.data_toolbar .data_delete_btn:disabled .data_delete_count { display: none; }
+/* [E] data_toolbar */
+
+/* [S] data_table */
+.data_table_wrap { width: 100%; border-top: 1px solid rgba(0, 0, 0, .12); border-bottom: 1px solid rgba(0, 0, 0, .12); }
+.data_table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.data_table th,
+.data_table td { height: 2.5rem; padding: 0.45rem 0.5rem; font-size: 0.7rem; color: #000; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, .12); }
+.data_table thead th { background: #f6f6f6; font-weight: 500; vertical-align: middle}
+.data_table tbody td { font-weight: 500; vertical-align: middle }
+.data_table tbody tr:last-child th,
+.data_table tbody tr:last-child td { border-bottom: 0; }
+.data_table td.data_col_name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.data_table tbody tr:has(.form_check input:checked) { background: rgba(27, 111, 255, .05); }
+.data_table .data_col_actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.5rem; }
+/* D2c 추가(design/publish-v2/css/component.css:216-219, 값 그대로) — 원본에서는 이 그룹
+   안에 있었으나 실 소비처가 없어(data_col_name_link 래퍼를 쓰는 화면이 없었다) 지금까지
+   반입되지 않았다. Library.jsx 목록뷰(프로젝트명 열)가 최초 소비처다. */
+.data_col_name_link { display: flex; flex-direction: column; align-items: center; width: 100%; gap: 0.2rem; color: inherit; white-space: normal; }
+.data_col_name_tit,
+.data_col_name_link .sub_txt { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 100%}
+.data_col_name_link .sub_txt { margin-left: 0; }
+.data_table .sub_txt { margin-left: 0.2rem; font-size: 0.6rem; font-weight: 400; color: #999; }
+/* [E] data_table */
+
+/* [S] data_pagination — R6c-ext A1: v2 갱신, 단 이번엔 브리지(신·구 선택자 병기)한다.
+   v2는 > button/.data_pagination_pages button을 .data_pagination_arrow/
+   .data_pagination_page_btn 명시 클래스로 바꿨다. Step 9가 이 두 클래스를 미리 whitelist에
+   올려 두라고 지시하지만, 유일 소비처 Pagination.jsx를 v2 클래스로 갱신하는 과업이 이번
+   라운드 파일 목록(A1~A3·D1~D2·E) 어디에도 없다(§4 디자인 참조 — 확인했으나 못 찾음).
+   그래서 구 선택자(요소 기반)를 지우지 않고 신규 클래스 선택자를 나란히 추가한다 —
+   Pagination.jsx가 지금 그대로여도 계속 스타일이 적용되고, 나중에 누군가 v2 클래스를
+   달아도 이미 스타일이 있다. */
+.data_pagination { display: flex; align-items: center; justify-content: center; gap: 0.8rem; width: 100%; padding: 0.8rem 0 0; }
+.data_pagination > button,
+.data_pagination_arrow { flex-shrink: 0; width: 1.2rem; height: 1.2rem; padding: 0; border: 0; background: none; }
+.data_pagination > button img,
+.data_pagination_arrow_icon { display: block; width: 100%; height: 100%; object-fit: contain; }
+.data_pagination_pages { display: flex; align-items: center; gap: 0.8rem; }
+.data_pagination_pages button,
+.data_pagination_page_btn { flex-shrink: 0; width: 1.2rem; height: 1.2rem; padding: 0; border: 0; border-radius: 50%; background: none; font-size: 0.65rem; font-weight: 500; line-height: 100%; color: #666; }
+.data_pagination_pages button[aria-current="page"],
+.data_pagination_page_btn[aria-current="page"] { background: #1a1a1a; color: #fff; }
+/* [E] data_pagination */
+
+/* [S] stat_card — D2b: admin_dashboard.html의 KPI 카드 4장(design/publish-v2/css/
+   component.css:741-750, 값 그대로). 소비처 Monitoring.jsx. 아이콘(Activity·Database 등
+   lucide-react)은 v2 stat_card 마크업에 대응 요소가 없어(label+value+compare 뿐) 이식하지
+   않는다 — v2가 요구하지 않는 장식을 남겨 두면 "퍼블이 옳다" 원칙과 어긋난다. */
+.stat_card_list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; width: 100%; }
+.stat_card { display: flex; flex-direction: column; gap: 0.5rem; padding: 1rem; border: 1px solid #ccc; border-radius: 0.5rem; background: #fff; }
+.stat_card_label { font-size: 1rem; font-weight: 500; line-height: 0.9rem; letter-spacing: -0.02rem; color: #333; }
+.stat_card_data { display: flex; align-items: flex-end; gap: 0.5rem; width: 100%; }
+.stat_card_value { font-size: 2.3rem; font-weight: 600; letter-spacing: -0.046rem; color: #333; line-height: 100%}
+.stat_card_compare { flex: 1 1 0; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.5rem; font-size: 0.8rem; font-weight: 300; letter-spacing: -0.016rem; color: #666; word-break: keep-all; }
+.stat_card_delta { flex-shrink: 0; display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem 0.25rem 0.25rem; border-radius: 0.25rem; font-size: 0.65rem; font-weight: 500; letter-spacing: -0.013rem; line-height: 100%}
+.stat_card_delta_icon { width: 0.75rem; height: 0.75rem; object-fit: contain; }
+.stat_card_delta.ty_up { background: var(--primary10); color: var(--primary); }
+.stat_card_delta.ty_down { background: rgba(0, 0, 0, .1); color: #666; }
+/* [E] stat_card */
+
+/* [S] node_setting_bar — D2b: admin_node.html의 검색 바(design/publish-v2/css/
+   component.css:834-837, 값 그대로). 소비처 Nodes.jsx. */
+.node_setting_bar { display: flex; align-items: center; gap: 0.8rem; width: 100%; }
+.node_setting_bar .node_setting_label { flex-shrink: 0; font-size: 0.9rem; font-weight: 600; line-height: 1.4rem; letter-spacing: -0.018rem; color: var(--black); }
+.node_setting_bar_input { flex: 1 1 0; min-width: 0; height: 2.6rem; padding: 0.4rem 0.8rem; border: 2px solid #ddd; border-radius: 0.4rem; background: #fff; font-size: 0.9rem; font-weight: 400; letter-spacing: -0.018rem; color: var(--black); }
+.node_setting_bar_input::placeholder { color: #999; }
+/* [E] node_setting_bar */
+
+/* [S] data_filter_export_btn — D2b: admin_log.html에서 data_filter_bar 옆에 나란히 두는
+   단독 버튼(design/publish-v2/css/component.css:850-851, 값 그대로) — 필터바와 높이를
+   맞춘다. 소비처 Log.jsx. */
+.data_filter_export_btn { flex-shrink: 0; height: 2.25rem; }
+/* [E] data_filter_export_btn */
+
+/* [S] template_bar — D2a: 제목은 아래 공용 [S] section_tit 그룹을 쓴다(v1의 전용
+   .template_bar_tit는 v2가 폐기했다 — design/publish-v2/css/component.css:757-759). */
+.template_bar { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 1.2rem 2rem; border-radius: 0.4rem; background: #f3f8ff; }
+.template_bar_txt { display: flex; align-items: center; gap: 0.8rem; }
+.template_bar_desc { font-size: 0.8rem; font-weight: 400; color: #333; }
+.template_bar_list { display: flex; align-items: center; gap: 0.4rem; }
+.template_bar_link { display: flex; align-items: center; gap: 0.25rem; height: 2rem; padding: 0 0.8rem; border-radius: 0.4rem; background: #fff; font-size: 0.8rem; font-weight: 500; color: #1a1a1a; }
+.template_bar_link img:first-child { width: 0.85rem; height: 1rem; }
+.template_bar_link img:last-child { width: 0.8rem; height: 0.8rem; }
+/* [E] template_bar */
+
+/* [S] upload_dropzone — D2a: 제목은 아래 공용 [S] section_tit 그룹을 쓴다(v1의 전용
+   .upload_dropzone_tit는 v2가 폐기했다). 아이콘도 element 선택자(`img`) 대신 v2의
+   .upload_dropzone_btn_icon 클래스 선택자로 바꿨다 — 유일 소비처 FileDropzone.jsx를
+   같은 커밋에서 갱신하므로 브리지 없이 값 그대로 이름만 맞춘다(값 불변, 회귀 없음). */
+.upload_dropzone { display: flex; justify-content: center; width: 100%; padding: 2rem; border: 2px dashed var(--primary); border-radius: 0.4rem; background: #fff; cursor: pointer; }
+.upload_dropzone_inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; width: 100%; max-width: 26rem; margin: 0 auto; }
+.upload_dropzone.is_dragover,
+.upload_dropzone.has_file,
+.upload_dropzone:hover { background: rgba(27, 111, 255, .05); }
+.upload_dropzone:has(.upload_dropzone_input:focus-visible) { outline: 2px dashed var(--focus-ring); outline-offset: 2px; }
+.upload_dropzone_input { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
+.upload_dropzone_txt { display: flex; flex-direction: column; gap: 0.5rem; }
+.upload_dropzone_desc { font-size: 0.8rem; font-weight: 400; color: #333; }
+.upload_dropzone_filename { font-size: 0.8rem; font-weight: 500; color: var(--primary); }
+.upload_dropzone.has_file .section_tit,
+.upload_dropzone.has_file .upload_dropzone_desc { display: none; }
+.upload_dropzone_btn { display: flex; align-items: center; gap: 0.25rem; flex-shrink: 0; height: 2rem; padding: 0 1rem; border: 1px solid var(--primary); border-radius: 2.5rem; background: #fff; color: var(--primary); font-size: 0.8rem; font-weight: 500; }
+.upload_dropzone_btn_icon { width: 1.25rem; height: 1.25rem; }
+/* [E] upload_dropzone */
+
+/* [S] section_tit — D2a: alert_popup/data_panel/template_bar/upload_dropzone/library_panel
+   제목(h2/h3/p) 공용(design/publish-v2/css/component.css:757-759, 값 그대로). data_panel의
+   제목은 위쪽 [S] data_panel 주석의 결정대로 여전히 자기 전용 클래스(data_panel_tit)를
+   쓰므로 이 공용 클래스의 실 소비처는 template_bar(Meta.jsx)·upload_dropzone
+   (FileDropzone.jsx) 둘 뿐이다 — 값은 종전 template_bar_tit·upload_dropzone_tit와
+   동일해 시각 회귀가 없다. */
+.section_tit { font-size: 1.2rem; font-weight: 700; color: #333; }
+/* [E] section_tit */
+
+/* [S] status_tag */
+.status_tag { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.65rem; font-weight: 500; }
+.status_tag:before { content: ""; width: 0.4rem; height: 0.4rem; border-radius: 50%; flex-shrink: 0; }
+.status_tag.ty_done { background: #edfff6; color: var(--status-done); }
+.status_tag.ty_done:before { background: var(--status-done); }
+.status_tag.ty_review { background: #eaf4ff; color: var(--status-review); }
+.status_tag.ty_review:before { background: var(--status-review); }
+.status_tag.ty_fail { background: #fff5f5; color: var(--status-fail); }
+.status_tag.ty_fail:before { background: var(--status-fail); }
+/* [E] status_tag */
+
+/* [S] data_status_text */
+.data_status_text.ty_done { color: var(--status-done); }
+.data_status_text.ty_review { color: var(--status-review); }
+.data_status_text.ty_fail { color: var(--status-fail); }
+/* [E] data_status_text */
+
+/* [S] data_table_dl_btn */
+.data_table_dl_btn { width: 1.6rem; height: 1.6rem; border-radius: 0.2rem; background: rgba(26, 26, 26, .7); margin: 0 auto; }
+.data_table_dl_btn img { width: 0.8rem; height: 0.8rem; }
+/* [E] data_table_dl_btn */
+
+/* ===========================================================================
+   R6c-ext D1-5b — publish-v2 검색흐름(search_result) CSS 이식.
+   D1-3(SearchFlowLayout)·D1-5(SearchResults·ResultsTab·MaterialModal)가 쓰는 퍼블
+   클래스에 CSS가 없어 검색바가 무스타일이었고 나머지는 Tailwind 브리지로만 서 있었다.
+   publish-v2 css/component.css의 해당 그룹을 값 그대로(¼ 축소 없이) 반입한다.
+   교정 0건 — R6c-ext 리뷰 A6 후속: 최초 반입 때 포커스링 #256ef4 를 var(--focus-ring) 로
+   정규화했는데 그 토큰 실값이 #1B6FFF 여서 정본과 "다른 색"이 렌더됐다. 근본 원인은
+   토큰 쪽이었다 — publish-v2 에서 #256ef4 는 6곳 전부 focus outline 전용이고 #1B6FFF 는
+   --primary·--role-super 뿐이어서, 퍼블은 포커스링을 브랜드색과 의도적으로 다르게 뒀다.
+   그래서 tokens.css 의 「교정 4」를 철회해 --focus-ring: #256ef4 로 정본화했고(앱의 포커스링
+   4곳이 한 번에 정본과 일치한다), 여기서는 그 토큰을 참조한다(색 단일 출처 유지).
+   미반입(계약): D10 미렌더 계약(ai_brief·rating_widget 두 그룹)은 round06f 가 해제했다 —
+   파일 끝 [S] ai_brief_card(갈래 B) · [S] rating_widget(갈래 C) 참조. 남은 미반입은
+   앱이 그리지 않는
+   선택자 — result_more_btn, result_card 의 is_active 변형,
+   detail_popup 갤러리 배경·화살표·아이콘, source 아이콘, license 배지·설명 하위, path·date,
+   ty_no_image·ty_log 변형, tag 의 등록·역할·활동 변형,
+   (dropdown_box 위젯은 round06f 갈래 D가 반입했다 — 파일 끝 [S] dropdown_box 참조)
+   popup_close_icon(앱은 img 대신 lucide svg 를 그린다).
+   R6c-ext 리뷰 A5 로 popup_tit·popup_close·popup_scroll 과 모달 헤더(panel_head ty_modal)를
+   추가 반입했다 — 이 훅들이 CSS 없이 클래스만 얹혀 있어 표시가 전부 Tailwind 에 의존했다.
+   =========================================================================== */
+
+/* [S] result_query_bar */
+.result_query_bar { display: flex; align-items: center; gap: 0; width: 100%; height: 3.2rem; padding: 0 0.8rem 0 1.2rem; border-radius: 0.8rem; background: #fff; margin-bottom: 1.2rem; flex-shrink: 0; box-shadow: 0 0.2rem 1rem rgba(59, 118, 231, 0.15)}
+.result_query_bar:has(.result_query_bar_input:focus-visible) { outline: 2px dashed var(--focus-ring); outline-offset: 2px; }
+.result_query_bar_icon { width: 1rem; height: 1rem; flex-shrink: 0; object-fit: contain; }
+.result_query_bar_input { flex: 1 1 auto; min-width: 0; border: 0; outline: 0; background: transparent; font-size: 0.9rem; color: #1a1a1a; height: 100%;}
+/* [readonly] 변형 미반입(R6c-ext 리뷰 A7) — 퍼블에선 log_detail_popup 의 읽기전용 질의바용이고
+   앱의 유일 소비처 SearchFlowLayout.jsx 의 input 은 편집 가능한 controlled input 이라 죽은 CSS 다. */
+.result_query_btn { display: flex; width: 1.6rem; height: 1.6rem; flex-direction: column; justify-content: center; align-items: center; gap: 0.4rem; border-radius: 0.4rem; background: var(--primary)}
+.result_query_btn_icon { width: 0.9rem; height: 0.9rem; object-fit: contain; }
+/* [E] result_query_bar */
+
+/* round07b-ext 리뷰 반입 — SearchFlowLayout.jsx가 「산출물생성」 탭에 붙이는 미열람
+   건수 뱃지의 CSS. 클래스만 쓰고 규칙이 없어 뱃지가 스타일 없이 뜨고 있었다(퍼블
+   v2 component.css L296-298 그대로 — 교정 0건). */
+/* [S] result_tabs_badge — page_tabs 재사용 화면의 "산출물생성" 탭에 얹는 카운트 뱃지 */
+.result_tabs_badge { display: flex; align-items: center; justify-content: center; height: 1rem; padding: 0.2rem 0.4rem; border-radius: 999px; background: var(--primary); color: #fff; font-size: 0.7rem; font-weight: 500; min-width: 2rem; line-height: 100%}
+/* [E] result_tabs_badge */
+
+/* [S] result_wrap — page_tabs 아래를 감싸는 흰 배경 카드(아랫모서리만 라운드) */
+.result_wrap { display: flex; flex-direction: column; gap: 1.2rem; width: 100%; padding: 1.2rem; border-radius: 0 0 0.8rem 0.8rem; background: #fff; box-shadow: 0 0.2rem 0.7rem rgba(59, 118, 231, .1)}
+/* ty_chat — R6c-ext D1-6 에서 반입. D1-5b 는 "ChatTab 이 아직 안 쓴다"며 의도적으로 스킵했고
+   그 소비자가 D1-6(ChatView.jsx 의 result_wrap ty_chat)이다. 아래 chat_input_dock 이
+   position:sticky; bottom:0 으로 바닥에 붙으므로 래퍼의 아래 패딩을 0으로 없앤다
+   (패딩이 남으면 sticky 도크 아래에 흰 띠가 생긴다). */
+.result_wrap.ty_chat { padding-bottom: 0; }
+/* [E] result_wrap */
+
+/* [S] result_meta_bar */
+.result_meta_bar { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+.result_meta_filters { display: flex; align-items: center; gap: 0.5rem; }
+/* data_total : v2는 이 4선택자를 data_toolbar 밖에서도 쓰는 독립 그룹으로 둔다(위쪽
+   .data_toolbar .data_total 은 v1 스코프 유지본). result_meta_bar 의 총건수(.data_total.ty_lg)가
+   data_toolbar 밖이라 독립 규칙이 필요하다 — 값은 위 스코프본과 같아 data_toolbar 소비처
+   (Ocr·Meta)에는 영향이 없다. */
+.data_total { font-size: 0.7rem; font-weight: 600; color: #333; }
+.data_total .data_total_tit { margin-right: 0.4rem; }
+.data_total_count { color: var(--primary); font-weight: 600; margin: 0 0.2rem 0 0.4rem}
+.data_total.ty_lg .data_total_tit { font-size: 0.9rem; }
+.data_total.ty_lg .data_total_count { font-weight: 700; margin-left: 0.3rem; }
+/* [E] result_meta_bar */
+
+/* [S] result_body */
+.result_body { display: flex; gap: 1.2rem; width: 100%; align-items: flex-start; }
+/* [E] result_body */
+
+/* [S] result_filter_list */
+.result_filter_list { flex-shrink: 0; width: 12rem; padding: 0.4rem; border: 1px solid rgba(0, 0, 0, .08); border-radius: 0.6rem; }
+.result_filter_list_menu { display: flex; flex-direction: column; }
+.result_filter_btn { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 2.5rem; padding: 0 0.8rem; border: 0; border-radius: 0.5rem; background: none; font-size: 0.7rem; font-weight: 500; color: #333; }
+.result_filter_count { color: #999; }
+.result_filter_btn.is_active { background: var(--primary10); color: var(--primary); font-weight: 700; }
+.result_filter_btn.is_active .result_filter_count { color: var(--primary); }
+/* [E] result_filter_list */
+
+/* [S] result_card_grid */
+.result_card_group { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 2rem; }
+.result_card_grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.8rem; width: 100%; }
+.result_card { display: flex; flex-direction: column; gap: 0.4rem; padding-top: 0.8rem; border: 1px solid rgba(0, 0, 0, .08); border-radius: 0.6rem; overflow: hidden; background: #fff; cursor: pointer; transition : none !important;  }
+.result_card:hover { background : url('../../assets/sub/bg_cardhover.png') no-repeat center center / cover }
+.result_card_badges { display: flex; align-items: center; gap: 0.3rem; padding: 0 0.8rem; }
+.result_card_tit { padding: 0 0.8rem; font-size: 0.75rem; font-weight: 600; color: #1a1a1a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.result_card_meta { padding: 0 0.8rem; font-size: 0.6rem; color: #999; }
+.result_card_thumb { position: relative; width: 100%; flex: 1 1 auto; min-height: 9rem; height : 14rem; padding: 0.8rem; display: flex; align-items: center; justify-content: center; background: #ccc; }
+.result_card:hover .result_card_thumb { background : transparent !important }
+.result_card:hover .result_card_tit,
+.result_card:hover .result_card_meta { color : #fff }
+.result_card:hover .btn_open { background : #fff; color : #333 }
+.result_card:hover .btn_close { background : #333; color : #fff; border-color : #fff }
+
+
+
+.result_card_thumb_img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; display: block; border-radius: 0.5rem}
+.result_card_dl { position: absolute; right: 0.4rem; bottom: 0.4rem; width: 1.4rem; height: 1.4rem; border-radius: 0.2rem; background: rgba(26, 26, 26, .7); }
+.result_card_dl_icon { width: 0.7rem; height: 0.7rem; }
+/* [E] result_card_grid */
+
+/* [S] tag — 자료검색 결과 카드 유형 배지(자료유형 4종만 반입; 등록·역할·활동 변형은 미소비) */
+.tag { display: inline-flex; align-items: center; height: 1.1rem; padding: 0 0.5rem; border-radius: 999px; font-size: 0.55rem; font-weight: 600; line-height: 100%;}
+.tag.ty_image { background: rgba(245, 158, 11, .12); color: var(--cat-image); }
+.result_card:hover .tag.ty_image { background : var(--cat-image); color : #fff }
+.tag.ty_video { background: rgba(236, 72, 153, .12); color: var(--cat-video); }
+.result_card:hover .tag.ty_video { background : var(--cat-video); color : #fff }
+.tag.ty_book { background: rgba(20, 184, 166, .12); color: var(--cat-book); }
+.result_card:hover .tag.ty_book { background: var(--cat-book); color : #fff }
+.tag.ty_web { background: rgba(139, 92, 246, .12); color: var(--cat-web); }
+.result_card:hover .tag.ty_web { background : var(--cat-web) }
+/* [E] tag */
+
+/* [S] detail_popup — 자료상세모달(이미지형). 앱은 오버레이 래퍼 안에서 .detail_popup.is_active 로
+   연다(퍼블 dim+is_active 와 동형; MaterialModal.jsx). 앱이 그리지 않는 자식 선택자는 미반입. */
+.detail_popup { display: none; position: fixed; left: 50%; top: 50%; z-index: 102; transform: translate(-50%, -50%); flex-direction: column; gap: .5rem; width: 48rem; max-width: 92vw; max-height: 85vh; overflow: hidden; background: #fff; border-radius: 0.8rem; }
+.detail_popup.is_active { display: flex; }
+/* 모달 헤더 — R6c-ext 리뷰 A1. Tailwind `px-6 py-4`(=6px/4px, round06d 의 px 스케일)로 옮겨져
+   있어 본문(퍼블 1.2rem=24px)과 ¼로 어긋났다. 퍼블 규칙을 값 그대로 반입한다.
+   .panel_head 는 앱 JSX·CSS 어디에도 같은 토큰이 없어(data_panel_head·dropdown_box_panel_head·
+   alert_popup_head 는 다른 토큰) 충돌이 없다 — grep 으로 실측 확인. ty_border/ty_between/ty_gap 등
+   다른 modifier 는 소비처가 없어 미반입. 퍼블 ty_modal 에는 border-bottom 이 없다. */
+.panel_head { display: flex; align-items: center; width: 100%; }
+.panel_head.ty_modal { flex-shrink: 0; gap: 1.2rem; padding: 1.2rem 1.2rem 0; }
+.panel_head.ty_modal .popup_tit { flex: 1 1 0; min-width: 0; }
+.panel_head.ty_between { flex-shrink: 0; justify-content: space-between; }
+.detail_popup_content { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: .6rem; width: 100%; overflow-y: auto; padding: 0.25rem 1.2rem 0 1.2rem;}
+.detail_popup_meta { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; width: 100%; }
+.detail_popup_source { flex-shrink: 0; display: flex; align-items: center; gap: 0.25rem; font-size: 0.7rem; font-weight: 500; color: #333; text-decoration: underline; }
+.detail_popup_gallery { flex-shrink: 0; position: relative; width: 100%; height: 18rem; border-radius: 0.4rem; overflow: hidden; background: #999; display: flex; align-items: center; justify-content: center; }
+.detail_popup_gallery_img { position: relative; height: 15.6rem; width: auto; max-width: 80%; object-fit: cover; border-radius: 0.05rem; box-shadow: 0 0 0.5rem rgba(0, 0, 0, .25); }
+.detail_popup_body { flex-shrink: 0; width: 100%; border-radius: 0.4rem; display: flex; flex-direction: column; gap: 1.2rem; }
+.detail_popup_info { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(0, 5fr); gap: 0.5rem; width: 100%; background-color : #F7F7F7; border-radius : .5rem; padding : .8rem; align-items : center }
+.detail_popup_info_row { display: contents; }
+.detail_popup_info_term { font-size: 0.7rem; font-weight: 700; color: #333; letter-spacing: -0.016rem; }
+.detail_popup_info_desc { font-size: 0.7rem; font-weight: 400; color: #1a1a1a; }
+.detail_popup_desc { width: 100%; padding: .8rem; background: #fff; border-radius: 0.4rem; font-size: 0.7rem; font-weight: 400; line-height: 1.5; color: #333; letter-spacing: -0.016rem; }
+.detail_popup_license { flex-shrink: 0; display: flex; align-items: center; gap: 1.5rem; width: 100%; padding: .5rem 0.8rem 1.2rem 2rem; }
+.gallery_btn { text-indent : -9999px }
+.gallery_btn svg { stroke : #fff; width : 2rem; height : 2rem; }
+/* [E] detail_popup */
+
+/* [S] popup_tit / popup_close / popup_scroll — R6c-ext 리뷰 A5.
+   MaterialModal.jsx 가 이 세 훅을 쓰는데 앱 CSS 에 규칙이 없어 표시가 전부 Tailwind 에
+   의존했다(제목이 퍼블 1.2rem/500/#000 대신 Tailwind 20px/700 로 렌더). 퍼블 v2
+   component.css L8-11(popup_close) · L57-64(popup_scroll) · L761-763(popup_tit) 을 값
+   그대로 반입한다. 세 클래스는 앱에서 MaterialModal.jsx 한 곳만 쓰므로(grep 실측)
+   다른 화면 회귀가 없다.
+
+   ── round07b-ext 추가 반입 2건 ──────────────────────────────────────────
+   ~~popup_close_icon 은 앱이 img 를 그리지 않아 미반입~~ → **반입한다.**
+   NodeModal(node_detail_modal)이 lucide svg 가 아니라 퍼블과 같은
+   `<img class="popup_close_icon">` 를 그리게 되면서 전제가 깨졌다. 규칙이
+   없으면 img 가 원본 크기로 나와 닫기 ✕ 가 제목을 밀어낸다(라이브 실측).
+
+   panel_head.ty_between 도 같은 이유다 — node_detail_modal 의 헤더가 이 변형을
+   쓰는데 규칙이 없어 justify-content 가 안 걸리고 ✕ 가 제목 옆에 붙었다. */
+.popup_tit { font-size: 1.2rem; font-weight: 500; color: #000; }
+.popup_close { flex-shrink: 0; width: 1.5rem; height: 1.5rem; }
+.popup_close_icon { width: 100%; height: 100%; object-fit: contain; }
+/* 팝업 안에서 스크롤되는 영역에 .popup_scroll 을 붙인다 — 기본 스크롤바를 5px로 좁히고
+   오른쪽에 여백을 준다(width 만 지정하면 Chrome 이 thumb 를 안 그리므로 thumb·track 도 함께). */
+.popup_scroll::-webkit-scrollbar { width: 0.25rem; }
+.popup_scroll::-webkit-scrollbar-track { background: transparent; }
+.popup_scroll::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, .25); border-radius: 0.125rem; }
+/* 막대와 오른쪽 끝 사이 여백은 투명 border-right 로 만든다(막대가 그 안쪽에 그려져 pill 유지).
+   자기 테두리가 있는 textarea 는 border-right 가 사라지므로 제외 */
+.popup_scroll:not(textarea) { border-right: 0.15rem solid transparent; }
+/* [E] popup_tit / popup_close / popup_scroll */
+
+/* ===========================================================================
+   R6c-ext D1-6 — publish-v2 결과기반 AI 대화(ai_chat) CSS 이식.
+   이 라운드의 규약대로 "CSS는 그것을 소비하는 태스크가 함께 이식한다" — chat_* 그룹의
+   소비처가 D1-6(ChatView.jsx + results/ChatTab.jsx)이므로 여기서 반입한다. 값은
+   publish-v2 css/component.css L504-543 그대로(rem·색·그라디언트 리터럴 보존, 교정 0건).
+   위 result_wrap 그룹에 .ty_chat 한 줄도 함께 반입했다(D1-5b가 소비처 없다고 스킵한 것).
+
+   glow_border 를 함께 반입하는 이유: 퍼블 인용칩(.chat_cite_item)이 자기 안에
+   svg.glow_border + rect 12개를 품고, 아래 chat 그룹의 6선택자(.chat_cite_item .glow_border
+   계열)가 그 기본 규칙을 전제로 hover/focus 시 opacity·animation-play-state 만 뒤집는다.
+   기본 규칙 없이 chat 그룹만 반입하면 그 6선택자가 아무것도 켜지 못하는 반쪽 이식이 된다.
+   퍼블에서 이 규칙들은 ai_brief_card 그룹(D10 미렌더) 사이에 놓여 있지만 선택자 자체는
+   .ai_brief_more 에 종속되지 않는 독립 장식이라, ai_brief 마크업 없이도 그대로 성립한다.
+   반입 범위는 .glow_border 1 + rect 1 + nth-of-type 12 + keyframes 12 + reduced-motion 1
+   (L318-344, 연속 구간 전량)이며 다른 서브시스템 규칙은 한 줄도 끌고 오지 않는다.
+   =========================================================================== */
+
+/* [S] glow_border — 인용칩 호버 글로우(소비처: components/GlowBorder.jsx) */
+.glow_border { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
+.glow_border rect { x: 1px; y: 1px; width: calc(100% - 2px); height: calc(100% - 2px); rx: 7px; fill: none; stroke: #3b76e7; stroke-width: 0.5px; stroke-linecap: round; animation-duration: 4s; animation-timing-function: linear; animation-iteration-count: infinite; }
+.glow_border rect:nth-of-type(1) { opacity: .02; stroke-dasharray: 16 84; animation-name: glow_border_spin_1; }
+.glow_border rect:nth-of-type(2) { opacity: .01; stroke-dasharray: 14.82 85.18; animation-name: glow_border_spin_2; }
+.glow_border rect:nth-of-type(3) { opacity: .03; stroke-dasharray: 13.64 86.36; animation-name: glow_border_spin_3; }
+.glow_border rect:nth-of-type(4) { opacity: .07; stroke-dasharray: 12.45 87.55; animation-name: glow_border_spin_4; }
+.glow_border rect:nth-of-type(5) { opacity: .13; stroke-dasharray: 11.27 88.73; animation-name: glow_border_spin_5; }
+.glow_border rect:nth-of-type(6) { opacity: .21; stroke-dasharray: 10.09 89.91; animation-name: glow_border_spin_6; }
+.glow_border rect:nth-of-type(7) { opacity: .30; stroke-dasharray: 8.91 91.09; animation-name: glow_border_spin_7; }
+.glow_border rect:nth-of-type(8) { opacity: .41; stroke-dasharray: 7.73 92.27; animation-name: glow_border_spin_8; }
+.glow_border rect:nth-of-type(9) { opacity: .53; stroke-dasharray: 6.55 93.45; animation-name: glow_border_spin_9; }
+.glow_border rect:nth-of-type(10) { opacity: .67; stroke-dasharray: 5.36 94.64; animation-name: glow_border_spin_10; }
+.glow_border rect:nth-of-type(11) { opacity: .83; stroke-dasharray: 4.18 95.82; animation-name: glow_border_spin_11; }
+.glow_border rect:nth-of-type(12) { opacity: 1; stroke-dasharray: 3 97; animation-name: glow_border_spin_12; }
+@keyframes glow_border_spin_1 { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -100; } }
+@keyframes glow_border_spin_2 { from { stroke-dashoffset: -.59; } to { stroke-dashoffset: -100.59; } }
+@keyframes glow_border_spin_3 { from { stroke-dashoffset: -1.18; } to { stroke-dashoffset: -101.18; } }
+@keyframes glow_border_spin_4 { from { stroke-dashoffset: -1.78; } to { stroke-dashoffset: -101.78; } }
+@keyframes glow_border_spin_5 { from { stroke-dashoffset: -2.37; } to { stroke-dashoffset: -102.37; } }
+@keyframes glow_border_spin_6 { from { stroke-dashoffset: -2.96; } to { stroke-dashoffset: -102.96; } }
+@keyframes glow_border_spin_7 { from { stroke-dashoffset: -3.55; } to { stroke-dashoffset: -103.55; } }
+@keyframes glow_border_spin_8 { from { stroke-dashoffset: -4.14; } to { stroke-dashoffset: -104.14; } }
+@keyframes glow_border_spin_9 { from { stroke-dashoffset: -4.73; } to { stroke-dashoffset: -104.73; } }
+@keyframes glow_border_spin_10 { from { stroke-dashoffset: -5.32; } to { stroke-dashoffset: -105.32; } }
+@keyframes glow_border_spin_11 { from { stroke-dashoffset: -5.91; } to { stroke-dashoffset: -105.91; } }
+@keyframes glow_border_spin_12 { from { stroke-dashoffset: -6.5; } to { stroke-dashoffset: -106.5; } }
+@media (prefers-reduced-motion: reduce) { .glow_border rect { animation: none; opacity: 0; } }
+/* [E] glow_border */
+
+/* [S] chat — 결과기반 AI 대화(ai_chat.html) */
+/* chat_welcome 배경은 흐린 블롭 합성을 그라디언트 토큰(#BCEAFF/#83B0FF/#1772D1)의 다중 radial-gradient로 근사한다 */
+/* result_wrap의 padding(1.2rem)을 뚫고 상/좌/우로 꽉 차 보이도록 음수 마진 + 그만큼 넓힌 width로 bleed 처리 */
+.chat_welcome { position: relative; width: calc(100% + 2.4rem); margin: -1.2rem -1.2rem 0; height: 4.65rem; display: flex; align-items: center; justify-content: center; gap: 0.8rem; overflow: hidden; background: radial-gradient(120% 200% at 15% 30%, rgba(188, 234, 255, .55) 0%, rgba(188, 234, 255, 0) 45%), radial-gradient(90% 220% at 75% 10%, rgba(131, 176, 255, .45) 0%, rgba(131, 176, 255, 0) 50%), radial-gradient(70% 200% at 62% 90%, rgba(23, 114, 209, .18) 0%, rgba(23, 114, 209, 0) 55%), #fff; }
+.chat_welcome_tit { font-size: 1.2rem; font-weight: 700; color: #1a1a1a; }
+.chat_welcome_desc { font-size: 0.8rem; font-weight: 400; color: #1a1a1a; }
+.chat_body { display: flex; flex-direction: column; gap: 1.2rem; width: 100%; }
+.chat_topic_bar { display: flex; align-items: center; gap: 1rem; width: 100%; padding: 0.8rem 1.2rem; border: 1px solid rgba(0, 0, 0, .12); border-radius: 0.4rem; }
+.chat_topic_bar_icon { flex-shrink: 0; width: 0.75rem; height: 1.2rem; object-fit: contain; }
+.chat_topic_bar_txt { font-size: 0.8rem; font-weight: 600; color: #333; }
+.chat_thread { display: flex; flex-direction: column; gap: 0.8rem; width: 100%; }
+.chat_msg { display: flex; width: 100%; }
+.chat_msg.ty_user { justify-content: flex-end; }
+.chat_msg.ty_ai { align-items: flex-start; gap: 1rem; }
+.chat_msg_avatar { flex-shrink: 0; width: 2rem; height: 2rem; object-fit: contain; }
+.chat_msg_bubble { max-width: 85%; font-size: 0.8rem; line-height: 1.5; color: #1a1a1a; }
+.chat_msg.ty_user .chat_msg_bubble { padding: 1.2rem; background: #f7f7f7; border-radius: 0.8rem 0.8rem 0.2rem 0.8rem; font-weight: 500; color: #000; }
+.chat_msg.ty_ai .chat_msg_content { display: flex; flex-direction: column; gap: 0.8rem; align-items: flex-start; min-width: 60%; padding-right: 15%;}
+.chat_msg.ty_ai .chat_msg_bubble { display: flex; flex-direction: column; gap: 1.2rem; padding: 1.2rem; background: rgba(27, 111, 255, .05); border-radius: 0.8rem; max-width: 100%; width : 100% }
+.chat_msg_bubble_txt.ty_indent { margin-top: 0.8rem; }
+.chat_msg_cite { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; width: 100%; }
+.chat_cite_item { position: relative; z-index: 0; display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.45rem 0.8rem; background: #fff; border-radius: 0.4rem; font-size: 0.8rem; font-weight: 500; color: #1a1a1a; text-align: left; overflow: hidden; }
+.chat_cite_item:hover, .chat_cite_item:focus-visible { box-shadow: 0 0.2rem 1rem rgba(59, 118, 231, .05); }
+.chat_cite_item .glow_border { opacity: 0; transition: opacity .2s; }
+.chat_cite_item .glow_border rect { animation-play-state: paused; }
+.chat_cite_item:hover .glow_border,
+.chat_cite_item:focus-visible .glow_border { opacity: 1; }
+.chat_cite_item:hover .glow_border rect,
+.chat_cite_item:focus-visible .glow_border rect { animation-play-state: running; }
+.chat_cite_num { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 1.25rem; height: 1.25rem; border-radius: 50%; background: var(--primary); color: #fff; font-size: 0.7rem; font-weight: 600; line-height: 100%}
+.chat_cite_txt { min-height: 1.25rem; display: flex; align-items: center}
+.chat_msg_actions { width: 100%; display: flex; align-items: center; gap: 0.5rem; justify-content: flex-end}
+.chat_msg_actions_icon { width: 1rem; height: 1rem; object-fit: contain; }
+.chat_input_dock { position: sticky; bottom: 0; z-index: 2; width: 100%; padding-bottom: 1.2rem; background: #fff; }
+.chat_input_bar { display: flex; align-items: center; gap: 0.3rem; width: 100%; padding: 0.8rem 0.8rem 0.8rem 0.7rem; background: #fff; border: 1px solid rgba(0, 0, 0, .12); border-radius: 0.8rem; }
+.chat_input_bar_input { flex: 1 1 0; min-width: 0; border: 0; background: none; font-size: 0.9rem; color: #1a1a1a; height: 1.8rem}
+.chat_input_bar_input::placeholder { color: #666; }
+.chat_input_send { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 1.8rem; height: 1.8rem; padding: 0.4rem; background: var(--primary); border-radius: 0.4rem; }
+.chat_input_send_icon { width: 0.9rem; height: 0.8rem; object-fit: contain; }
+/* [E] chat */
+
+/* round07j — 퍼블 반입본에 「animate-modalIn 에 padding 1rem」 규칙 한 줄이 들어와
+   있었다. **되살리지 않는다.** animate-modalIn 은 퍼블 클래스가 아니라 Tailwind 가
+   만드는 애니메이션 유틸리티다(tailwind.config.js:155 `modalIn .22s ease both`).
+   소비처는 components/Modal.jsx:21(공용 모달 패널)과 components/Toast.jsx:42 —
+   즉 이 한 줄은 **앱의 모든 모달과 모든 토스트**에 16px 여백을 얹는다.
+   Modal 패널은 자체 padding 유틸이 없고(안쪽 자식이 px-6 py-4 를 가진다)
+   component.css 가 tailwind-utilities.css 보다 먼저 로드되지만 Tailwind 는 이
+   이름에 padding 을 내보내지 않으므로 경쟁자가 없어 그대로 이긴다.
+   css-contract 의 클래스 충돌 검사(R6d-05)가 잡아낸 것이 정확히 이 경우다.
+   퍼블에 「어느 요소에 여백을 주려던 것인지」 확인 후, 그 요소의 전용 클래스로
+   publish-ext.css 에 다시 적는다. */
+
+/* ===========================================================================
+   R6c-ext D1-7 — publish-v2 산출물생성(output_node) CSS 이식.
+   소비처: pages/OutputView.jsx(result_wrap + chat_welcome 재사용 — 그 CSS는 D1-6이 이미
+   반입했으므로 여기서 다시 반입하지 않는다), pages/results/OutputTab.jsx(node_view·
+   node_select_panel — node_result_panel 은 round07b-ext task-11 에서 마크업이 통째로
+   사라져 CSS 도 함께 제거했다, 아래 [E] node_select_panel 뒤 주석 참조),
+   components/NodeGraph.jsx(node_graph*). 값은
+   publish-v2 css/component.css L545-630(node_view~node_result_panel 연속 구간) 그대로
+   (rem·색·그리드 리터럴 보존, 교정 0건) + 상단 btn 변형 5선택자(L15·20-21·26-27, btn 그룹
+   안에서 아직 반입 안 된 것만).
+
+   미반입(계약):
+     · dropdown_box 그룹(L361-392 등 53규칙) — 퍼블은 "유형 선택"(설명문·홍보자료 세부유형)에
+       이 위젯을 쓰지만, D1-5b가 검색결과 필터에서 같은 그룹을 "상태 있는 콤보박스라 마크업
+       범위 밖"으로 스킵한 선례와 일관되게 여기서도 스킵한다 — OutputTab은 기존 네이티브
+       select 를 그대로 쓴다(표시용 세부유형 선택). node_select_type_row 안의 dropdown_box
+       전용 4선택자(L597-600)도 함께 미반입.
+       ※ round06f 갈래 D가 검색결과 자료유형 필터를 실제로 구현하면서 dropdown_box CSS
+         자체는 파일 끝 [S] dropdown_box 로 반입됐다(D1-5b의 미반입 계약만 해제). 이 절의
+         결정("OutputTab 은 네이티브 select 를 그대로 쓴다")은 그대로 유효하며, 위 4선택자도
+         여전히 미반입이다.
+     · node_result_timeline* 그룹(L614-626, 자식 의사요소 포함) — 퍼블은 "타임라인 생성" 클릭
+       시 js/common.js 가 목록을 채워 넣지만, 이 태스크는 그 버튼을 다른 실행 버튼과 동일하게
+       showToast('준비 중입니다')로만 배선한다(브리프 범위 3) — 패널을 열 실제 토글이 없어
+       마크업 자체를 그리지 않는다(죽은 CSS 방지).
+     · node_graph_node.is_selected · is_pinged(+ 대응 @keyframes) — NodeGraph는 "표시
+       전용"(클릭 → NodeModal만) 스코프라 다중 선택 표시·핑 애니메이션을 구현하지 않는다.
+     · node_select_tag.ty_active 3규칙(퍼블 L586-588, "선택된 칩" 강조) — D1-7 리뷰(B3)에서 제거.
+       자료 선택이 준비중이라 앱은 어떤 칩에도 ty_active 를 붙이지 않는다 → 위 두 항목과 같은
+       "마크업 없는 죽은 CSS 방지" 논거가 그대로 적용된다. 선택이 실제로 구현되면 함께 되살릴
+       것(css-contract.test.js 의 INTENDED_PUBLISH_CLASSNAMES 등재도 그때 다시 추가).
+   =========================================================================== */
+
+/* [S] btn 추가 변형 — node_result_actions·node_select_type_row 소비 */
+.btn_icon { width: 1rem; height: 1rem; object-fit: contain; object-position: center; }
+.btn_md { height: 2.4rem; padding: 0 0.8rem; border-radius: 0.3rem; font-size: 0.8rem; font-weight: 500; }
+.btn_md.ty_02 { height: 2rem; padding: 0 0.75rem; border-radius: 0.4rem; gap: 0.25rem; }
+.btn_outline_dark { background: #fff; border: 1px solid #333; color: #333; }
+.btn_gray { background: rgba(0, 0, 0, 0.1); color: #999999; }
+.btn_dark { background: #333; color: #fff; }
+/* [E] btn 추가 변형 */
+
+/* [S] node_view — 산출물생성(output_node.html) 노드 클러스터링 뷰 */
+.node_view { display: flex; gap: 1.2rem; width: 100%; }
+.node_criteria { flex-shrink: 0; width: 12rem; display: flex; flex-direction: column; gap: 0.8rem; padding: 0.8rem; background: var(--primary5); border-radius: 0.4rem; }
+.node_criteria_head { display: flex; flex-direction: column; gap: 0.2rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0, 0, 0, .12); }
+.node_criteria_tit { font-size: 0.8rem; font-weight: 600; color: #333; }
+.node_criteria_desc { font-size: 0.7rem; font-weight: 500; color: #999; }
+.node_criteria_list { display: flex; flex-direction: column; gap: 0.8rem; width: 100%; }
+.node_criteria_btn { display: flex; align-items: center; justify-content: flex-start; width: 100%; height: 2.55rem; padding: 0.8rem; border: 0; border-radius: 0.4rem; font-size: 0.8rem; font-weight: 600; color: #1a1a1a; background: none; }
+.node_criteria_btn span { display : inline-flex; margin-left : .5rem; font-size : .8rem; color : #1a1a1a }
+.node_criteria_btn.is_active { background: var(--primary); color: #fff; }
+.node_criteria_btn.is_active span { color : #fff}
+.node_graph { flex: 1 1 0; min-width: 0; position: relative; height: 21.2rem; }
+.node_graph_lines { position: absolute; inset: 0; width: 100%; height: 100%; }
+.node_graph_node { position: absolute; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem 1.5rem; border-radius: 0.75rem; background: #fff; border: 1px solid; }
+.node_graph_node:not(.ty_center):hover,
+.node_graph_node:not(.ty_center):focus-visible { z-index: 2; }
+.node_graph_node_label { font-size: 0.8rem; font-weight: 500; color: #333; white-space: nowrap; }
+.node_graph_node_tag { display: flex; align-items: center; justify-content: center; height: 1.5rem; padding: 0.15rem 1rem; border-radius: 100px; font-size: 0.7rem; font-weight: 600; color: #fff; letter-spacing: -0.014rem; white-space: nowrap; }
+.node_graph_node.ty_center { padding: 1rem 2.25rem; border-radius: 0.75rem; background: #333; border: 0; gap: 0.25rem; cursor: default; transform: translate(-50%, -50%); }
+.node_graph_node.ty_center .node_graph_node_label { font-size: 1rem; font-weight: 700; color: #fff; }
+.node_graph_node_sub { font-size: 0.8rem; font-weight: 500; color: #fff; letter-spacing: -0.016rem; }
+.node_graph_node:not(.ty_center) { cursor: pointer; }
+.node_graph_node:not(.ty_center):hover, .node_graph_node:not(.ty_center):focus-visible { box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, .15); }
+/* [E] node_view */
+
+/* [S] node_select_panel — 선택 자료 패널 */
+.node_select_panel { display: flex; flex-direction: column; width: 100%; padding: 0.8rem; border: 1px solid rgba(0, 0, 0, .12); border-radius: 0.8rem; background: #fff; }
+.node_select_head { display: flex; align-items: center; gap: 0.8rem; width: 100%; padding: 0.4rem 0.4rem 1.2rem; border-bottom: 1px solid rgba(0, 0, 0, .12); }
+.node_select_tit { flex-shrink: 0; font-size: 0.8rem; font-weight: 600; color: #333; letter-spacing: -0.016rem; }
+.node_select_tags { flex: 1 1 0; min-width: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.node_select_tag { display: flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.4rem 0.3rem 0.6rem; border: 1px solid #ccc; border-radius: 100px; background: #fff; cursor: pointer; }
+.node_select_tag:hover, .node_select_tag:focus-visible { box-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, .15); }
+.node_select_tag_label { font-size: 0.8rem; font-weight: 500; color: #666; letter-spacing: -0.016rem; }
+.node_select_tag_count { display: flex; align-items: center; padding: 0.1rem 0.4rem; border-radius: 100px; background: #f7f7f7; font-size: 0.6rem; font-weight: 500; color: #333; letter-spacing: -0.012rem; line-height: 100%}
+.node_select_tag_remove { flex-shrink: 0; width: 0.8rem; height: 0.8rem; border: 0; background: none; padding: 0; }
+.node_select_tag_remove_icon { width: 100%; height: 100%; object-fit: contain; }
+.node_select_body { display: flex; flex-direction: column; gap: 0.8rem; width: 100%; padding: 1.2rem 0.4rem 0.4rem; }
+.node_select_guide { font-size: 0.8rem; font-weight: 500; line-height: 1.4; color: #1a1a1a; letter-spacing: -0.016rem; }
+.node_select_types { display: flex; gap: 2rem; align-items: center; width: 100%; }
+.node_select_type { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.node_select_type_head { display: flex; align-items: flex-end; gap: 0.4rem; }
+.node_select_type_tit { font-size: 0.7rem; font-weight: 500; color: #333; }
+.node_select_type_desc { font-size: 0.6rem; color: #999; }
+.node_select_type_row { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); gap: 0.4rem; width: 100% }
+.node_select_type_row select { position : relative; background : url('../../assets/icons/ic_arrow_down.svg') no-repeat right 0.4rem center / 20px 15px; }
+
+
+
+
+.node_select_type_row .btn { height: 2.25rem; border-radius: 0.4rem; white-space: nowrap; }
+.node_select_type_divider { flex-shrink: 0; width: 1px; align-self: stretch; background: rgba(0, 0, 0, .12); }
+/* [E] node_select_panel */
+
+/* node_result_panel 그룹(11규칙) 제거 — round07b-ext task-11이 「생성 결과 패널」
+   마크업을 통째로 걷어내고 그 자리를 산출물 목록(OutputList.jsx)으로 바꿨다. 소비처가
+   사라진 이식 CSS는 남겨 둘수록 "아직 쓰이는 것"으로 오독된다(D1-7 리뷰 B3이
+   node_select_tag.ty_active 3규칙을 같은 논거로 지운 선례). 생성 결과 패널이 언젠가
+   되살아나면 퍼블 v2 component.css의 해당 블록을 그대로 다시 반입하면 된다. */
+
+/* ===========================================================================
+   R6c-ext D2c — 라이브러리 v2(list/card 이중뷰) 재퍼블. publish-v2 library.html의
+   result_query_bar(ty_02 변형) · library_panel(panel_head.ty_gap + view_toggle) ·
+   library_card_list(카드뷰) · library_table(목록뷰) · avatar_stack을 값 그대로 반입한다.
+   유일 소비처는 pages/Library.jsx(카드뷰 LibraryCard 서브컴포넌트 · 목록뷰
+   DataTable variant="library_table"). data_col_name_link/data_col_name_tit/sub_txt는
+   위 [S] data_table 블록 안에 나란히 추가했다(그룹 경계는 유지).
+
+   미반입: library_card_lock_badge(design/publish-v2/css/component.css:898-899).
+   library.html 933줄 전체를 실측했지만 이 선택자를 쓰는 마크업이 단 하나도 없다
+   (퍼블 자신의 카드 어디에도 뱃지 span이 없고, 오직 library_card_lock 버튼 하나뿐이다)
+   — 원본에서도 죽은 선택자라 R6c-ext D1-7의 ty_active 스킵과 같은 기준으로 뺀다.
+   =========================================================================== */
+
+/* [S] result_query_bar ty_02 — 라이브러리 검색바(테두리 대신 파란 그림자). D1-5b가
+   "유일 소비처 없음"이라며 스킵한 변형이다(위 [S] result_query_bar 주석 참조) —
+   Library.jsx가 최초 소비처. */
+.result_query_bar.ty_02 { margin-bottom: 0.8rem; border: 0; box-shadow: 0 0.2rem 0.7rem rgba(59, 118, 231, .1); margin-top: 0.2rem;}
+/* [E] result_query_bar ty_02 */
+
+/* [S] library_panel */
+.library_panel { display: flex; flex-direction: column; gap: 1.2rem; width: 100%; padding: 1.2rem; border-radius: 0.8rem; background: #fff; box-shadow: 0 0.2rem 0.5rem rgba(59, 118, 231, .15)}
+.panel_head.ty_gap { gap: 0.8rem; min-height: 2rem; }
+.panel_head.ty_gap .section_tit { flex: 1 1 0; min-width: 0; }
+/* [E] library_panel */
+
+/* [S] view_toggle — 목록형/썸네일형 전환 */
+.view_toggle { flex-shrink: 0; display: flex; align-items: center; padding: 0.2rem; border-radius: 0.4rem; background: rgba(0, 0, 0, .03); }
+.view_toggle_btn { display: flex; align-items: center; justify-content: center; padding: 0.4rem; border: 0; border-radius: 0.2rem; background: none; }
+.view_toggle_icon { display: block; width: 0.8rem; height: 0.8rem; object-fit: contain; }
+.view_toggle_icon_active { display: none; width: 0.8rem; height: 0.8rem; object-fit: contain; }
+.view_toggle_btn[aria-pressed="true"] { background: #fff; }
+.view_toggle_btn[aria-pressed="true"] .view_toggle_icon { display: none; }
+.view_toggle_btn[aria-pressed="true"] .view_toggle_icon_active { display: block; }
+/* [E] view_toggle */
+
+/* [S] avatar_stack — 겹쳐 놓은 참여자 목록 + 남은 인원(+N) 뱃지 */
+.avatar_stack { display: flex; align-items: center; }
+.avatar_stack_icon { width: 1.2rem; height: 1.2rem; border-radius: 50%; object-fit: cover; border: solid 2px var(--white)}
+.avatar_stack_icon.ty_overlap,
+.avatar_stack_more { margin-left: -0.4rem; }
+.avatar_stack_more { display: flex; align-items: center; justify-content: center; min-width: 1.2rem; height: 1.2rem; border: 2px solid #fff; border-radius: 0.6rem; background: #333; box-sizing: border-box; font-size: 0.5rem; font-weight: 500; color: #fff; line-height: 100%; padding: 0 0.2rem 0 0.1rem; letter-spacing: -0.015rem}
+/* [E] avatar_stack */
+
+/* [S] library_card — 카드뷰(library_card_list). library_card_lock_badge는 위 안내대로 미반입. */
+.library_card_list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.2rem; width: 100%; }
+.library_card { position: relative; display: flex; flex-direction: column; width: 100%; border: 1px solid rgba(0, 0, 0, .12); border-radius: 0.8rem; background: #fff; overflow: hidden; }
+.library_card_head { display: flex; align-items: center; gap: 0.4rem; padding: 1.2rem 1.2rem 0; }
+.library_card_avatar { flex-shrink: 0; width: 1.2rem; height: 1.2rem; border-radius: 50%; object-fit: cover; }
+.library_card_writer { flex: 1 1 0; min-width: 0; font-size: 0.8rem; font-weight: 500; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.library_card_body { flex: 1 1 auto; display: flex; flex-direction: column; gap: 0.4rem; padding: 1.2rem; }
+.library_card_tit { display: flex; align-items: flex-end; gap: 0.4rem; font-size: 1rem; font-weight: 600; line-height: 1.4rem; letter-spacing: -0.02rem; color: #333; }
+.library_card_tit_link { color: inherit; text-align : left }
+.library_card_desc { font-size: 0.7rem; font-weight: 500; line-height: 1.5; color: #666; }
+.library_card_date { display: flex; align-items: center; gap: 0.2rem; font-size: 0.6rem; font-weight: 400; line-height: 0.7rem; color: #999; }
+.library_card_date_icon { width: 0.6rem; height: 0.6rem; object-fit: contain; }
+.library_card_lock { position: relative; display: flex; align-items: center; justify-content: center; gap: 0.2rem; width: 100%; margin-top: auto; padding: 0.4rem 1.2rem; border: 0; border-radius: 0.2rem; background: rgba(0, 0, 0, .03); font-size: 0.6rem; font-weight: 600; line-height: 0.7rem; color: var(--primary); }
+.library_card_lock_icon { width: 0.6rem; height: 0.6rem; object-fit: contain; }
+.library_card_foot { display: flex; align-items: center; justify-content: end; gap: 0.8rem; padding: 0.6rem 1.2rem; border-top: 1px solid rgba(0, 0, 0, .12); }
+.library_card_counts { display: flex; align-items: center; justify-content: flex-end; gap: 0.6rem; }
+.library_card_counts_item { display: flex; align-items: center; gap: 0.2rem; font-size: 0.6rem; font-weight: 500; color: #333; }
+.library_card_counts_icon { width: 0.8rem; height: 0.8rem; object-fit: contain; }
+.library_card_counts_icon_active { display: none; width: 0.8rem; height: 0.8rem; object-fit: contain; }
+.library_card:hover,
+.library_card:has(:focus-visible) { background: #1a1a1a; }
+.library_card:hover .library_card_writer,
+.library_card:has(:focus-visible) .library_card_writer,
+.library_card:hover .library_card_tit,
+.library_card:has(:focus-visible) .library_card_tit { color: #fff; }
+.library_card:hover .library_card_desc,
+.library_card:has(:focus-visible) .library_card_desc { color: #f0f0f0; }
+.library_card:hover .library_card_date,
+.library_card:has(:focus-visible) .library_card_date { color: #d9d9d9; }
+.library_card:hover .library_card_lock,
+.library_card:has(:focus-visible) .library_card_lock { background: rgba(255, 255, 255, .1); color: #fff; }
+.library_card:hover .library_card_foot,
+.library_card:has(:focus-visible) .library_card_foot { border-top-color: rgba(255, 255, 255, .12); }
+.library_card:hover .library_card_counts_item,
+.library_card:has(:focus-visible) .library_card_counts_item { color: #f0f0f0; }
+.library_card:hover .library_card_date_icon,
+.library_card:has(:focus-visible) .library_card_date_icon,
+.library_card:hover .library_card_lock_icon,
+.library_card:has(:focus-visible) .library_card_lock_icon { filter: brightness(0) invert(1); }
+.library_card:hover .avatar_stack_more,
+.library_card:has(:focus-visible) .avatar_stack_more { border-color: #1a1a1a; background: #f0f0f0; color: #1a1a1a; }
+.library_card:hover .avatar_stack_icon,
+.library_card:has(:focus-visible) .avatar_stack_icon { border-color: #1a1a1a}
+.library_card:hover .library_card_counts_icon_active,
+.library_card:has(:focus-visible) .library_card_counts_icon_active { display: block; }
+.library_card:hover .library_card_counts_icon { -webkit-filter: brightness(0) invert(1); 
+filter: brightness(0) invert(1); }
+/* [E] library_card */
+
+/* [S] library_table — 목록형 뷰 */
+.library_table .avatar_stack { justify-content: center; }
+.library_table .library_table_lock { display: inline-flex; align-items: center; gap: 0.2rem; padding: 0; border: 0; background: none; font-size: 0.65rem; font-weight: 600; color: var(--primary); line-height: 100%}
+.library_table_lock_icon { width: 0.6rem; height: 0.6rem; object-fit: contain; }
+/* [E] library_table */
+
+/* ===========================================================================
+   round06f 갈래 B — publish-v2 AI 브리핑 카드(ai_brief_card) CSS 이식.
+   소비처는 뒤 태스크의 pages/results/AiBriefCard.jsx(SearchResults.jsx 가 마운트) —
+   이 태스크는 CSS만 반입한다. 값은 publish-v2 css/component.css L307-317 + L345-350
+   그대로(rem 리터럴 보존, 교정 0건).
+
+   glow_border(L318-344, .glow_border 1 + rect 1 + nth-of-type 12 + keyframes 12 +
+   reduced-motion 1)는 재반입하지 않는다 — R6c-ext D1-6 이 인용칩(.chat_cite_item) 소비를
+   위해 이미 독립 그룹으로 반입해 뒀다(위 [S] glow_border 참조). 두 벌로 적으면
+   @keyframes 가 파일에 두 번 생겨 뒤 정의가 앞 정의를 조용히 덮어쓴다.
+
+   미반입: .ai_brief_card.ty_02(L352-354, 3규칙) — 앱이 이 변형을 그리지 않는 죽은 코드.
+   =========================================================================== */
+
+/* [S] ai_brief_card */
+.ai_brief_card { width: 100%; padding: 1rem 1.2rem; border-radius: 0.6rem; background: var(--primary5); }
+.ai_brief_head { display: flex; align-items: center; gap: 0.8rem; width: 100%; }
+.ai_brief_logo { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 50%; background: linear-gradient(92deg, #192B9B 0%, #4284F5 104.6%); }
+.ai_brief_logo_icon { width: 1rem; height: 1rem; object-fit: contain; }
+.ai_brief_info { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 0.2rem; }
+.ai_brief_tit { font-size: 0.9rem; font-weight: 700; color: #333; display: flex; align-items: center; gap: 0.4rem; }
+.ai_brief_tag { display: inline-flex; align-items: center; justify-content: center; padding: 0 0.4rem; border-radius: 2rem; background: rgba(27, 111, 255, .2); color: var(--primary); font-size: 0.6rem; font-weight: 600; height: 1rem; line-height: 100%}
+.ai_brief_desc { font-size: 0.7rem; font-weight: 400; color: #999; }
+.ai_brief_actions { flex-shrink: 0; display: flex; align-items: center; gap: 0.8rem; }
+.ai_brief_more { position: relative; z-index: 0; display: flex; align-items: center; gap: 0.2rem; height: 1.6rem; padding: 0 0.4rem; border-radius: 0.4rem; background: #fff; box-shadow: 0 0.2rem 0.5rem rgba(59, 118, 231, .05); font-size: 0.7rem; font-weight: 600; letter-spacing: -0.014rem; color: var(--primary); overflow: hidden; }
+.ai_brief_more_icon { width: 1rem; height: 1rem; flex-shrink: 0; }
+.ai_brief_toggle { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 1.6rem; height: 1.6rem; border: 0; border-radius: 0.4rem; background: #fff; }
+.ai_brief_toggle_icon { width: 1.2rem; height: 1.2rem; transition: transform .2s; transform: rotate(180deg);}
+.ai_brief_toggle[aria-expanded="true"] .ai_brief_toggle_icon { transform: rotate(0deg); }
+.ai_brief_body { margin-top: 1.2rem; font-size: 0.8rem; font-weight: 400; line-height: 1.6; color: #333; }
+.ai_brief_notice { margin-top: 0.8rem; display: flex; align-items: center; gap: 0.3rem; font-size: 0.6rem; color: #999; }
+.ai_brief_notice_icon { width: 0.7rem; height: 0.7rem; flex-shrink: 0; object-fit: contain; position: relative; top: -1px}
+/* [E] ai_brief_card */
+
+/* ===========================================================================
+   round06f 갈래 D — publish-v2 자료유형 다중선택 드롭다운 CSS 이식.
+   소비처: components/DropdownCheckBox.jsx(pages/results/ResultsTab.jsx 의 result_meta_bar).
+   값은 publish-v2 css/component.css L364-373·L377-378·L383·L385-391 그대로
+   (rem·색 리터럴 보존, 교정 0건).
+
+   이 레포는 D1-5b·D1-7·D2a 세 라운드에 걸쳐 dropdown_box 를 "상태 있는 위젯이라 범위 밖"
+   으로 미뤄 왔다. round06f 가 자료유형 필터를 실제로 구현하면서 그 계약이 해제된다 —
+   다만 **다른 화면의 select 유지 결정은 그대로다**(OutputTab 의 세부유형 선택, 자료관리
+   필터 등은 여전히 네이티브 select 를 쓴다). 즉 CSS 는 이제 존재하지만 그 화면들이
+   위젯으로 갈아타는 것은 별개 결정이다.
+
+   round07h 갱신 — L387-388 .dropdown_box_list_item·.dropdown_box_item(단일선택 listbox
+   변형)을 추가 반입한다. 위 문단이 쓰였을 때는 소비처가 ty_check(다중선택, <div
+   class="form_check"> 구조)뿐이라 이 두 규칙을 "죽은 코드"로 미반입해 두었으나,
+   round07h 의 SortSelect.jsx·VisibilitySelect.jsx(정렬기준·등록유형, search_result.html
+   L99-118 그대로의 <ul role="listbox"><li class="dropdown_box_list_item" role="option">
+   <button class="dropdown_box_item"> 구조)가 그 첫 소비처가 되어 계약이 해제된다.
+
+   ⚠️ 반입 범위에서 뺀 6규칙 — 앱이 그리지 않는 선택자(D7 죽은 코드 미반입):
+     · L374-375 dropdown_box 의 ty_page_size 변형 2규칙 — 노출갯수 드롭다운은 미참조(§1.4 #2).
+       서버가 page_size 를 20으로 캡하고(api.py) 프론트가 아예 보내지 않아 40/60을
+       표현할 통로가 없다.
+     · L380-382 embed_filter_status(ID 선택자) 3규칙 — 임베딩관리 화면 전용이다.
+     · L384 .dropdown_box_panel_head.lg — 앱은 lg 변형을 쓰지 않는다.
+   =========================================================================== */
+
+/* [S] dropdown_box — 닫힘(trigger 버튼) + 열림(패널) 커스텀 드롭다운. 네이티브 select 로는
+   다중선택(체크박스)과 닫힘 상태 요약 텍스트를 표현할 수 없어 버튼+패널 구조다. */
+.dropdown_box { position: relative; }
+.dropdown_box_trigger { display: flex; align-items: center; gap: 0.8rem; height: 1.58rem; padding: 0 0.6rem; border: 1px solid #ccc; border-radius: 0.3rem; background: #fff; }
+.dropdown_box_label { flex-shrink: 0; padding-right: 0.6rem; border-right: 1px solid rgba(0, 0, 0, .12); font-size: 0.7rem; font-weight: 600; line-height: 0.9rem; letter-spacing: -0.014rem; color: #999; }
+.dropdown_box_value { font-size: 0.7rem; font-weight: 600; line-height: 0.9rem; letter-spacing: -0.014rem; color: #333; white-space: nowrap; }
+.dropdown_box_arrow { width: 0.8rem; height: 0.8rem; flex-shrink: 0; object-fit: contain; }
+.dropdown_box_arrow.white { filter: brightness(0) invert(1); }
+.dropdown_box.ty_filled .dropdown_box_trigger { border-color: #1a1a1a; background: #1a1a1a; }
+.dropdown_box.ty_filled .dropdown_box_label { border-right-color: rgba(255, 255, 255, .38); }
+.dropdown_box.ty_filled .dropdown_box_value { color: #fff; }
+.dropdown_box_value_group { font-weight: 600; }
+.dropdown_box_value_count { font-style: normal; font-weight: 700; color: #ccc; margin-right: 0.1rem; }
+.dropdown_box_panel { position: absolute; top: 0; left: 0; z-index: 10; display: flex; flex-direction: column; gap: 0.4rem; min-width: 100%; width: max-content; padding: 0 0 0.8rem; border-radius: 0.4rem; background: #fff; box-shadow: 0 0.2rem 1rem rgba(0, 0, 0, .15); }
+.dropdown_box_panel[hidden] { display: none; }
+.dropdown_box_panel_head { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0.4rem 0.6rem; }
+.dropdown_box_panel_head .dropdown_box_label { padding-right: 0; border-right: 0; }
+.dropdown_box_list { display: flex; flex-direction: column; gap: 0.8rem; width: 100%; padding: 0 0.6rem}
+.dropdown_box_list_item{ display: flex}
+.dropdown_box_item { width: 100%; text-align: left; font-size: 0.7rem; font-weight: 600; line-height: 0.9rem; letter-spacing: -0.014rem; color: #1a1a1a; }
+.dropdown_box_list.ty_check { gap: 0.8rem; }
+.dropdown_box_list.ty_check .form_check { width: 100%; }
+.dropdown_box_list.ty_check .form_check .form_check_label { font-size: 0.7rem; font-weight: 600; color: #1a1a1a; }
+/* [E] dropdown_box */
+
+/* ===========================================================================
+   round06f 갈래 C — publish-v2 검색 품질 만족도 위젯 CSS 이식.
+   소비처: pages/results/RatingWidget.jsx(SearchResults.jsx 의 LiveResultsPanel 이 마운트).
+   값은 publish-v2 css/component.css L463-501 그대로(rem·색 리터럴 보존).
+   D1-5b 가 「미반입(계약)」에 적어 둔 "rating_widget 그룹(D10 미렌더)"을 이 라운드가 해제한다.
+
+   교정 1건 — 포커스링(퍼블 L485)의 리터럴 #256ef4 를 var(--focus-ring) 으로 바꿨다.
+   이 파일의 R6c-ext D1-5b 헤더가 이미 같은 결정을 두 곳에 적용하고 근거를 남겼다
+   ("--focus-ring: #256ef4 로 정본화했고 … 여기서는 그 토큰을 참조한다(색 단일 출처 유지)").
+   토큰 실값이 정확히 #256ef4 라 렌더 결과는 같고, 리터럴을 남기면 같은 파일에서 같은
+   속성이 두 방식으로 갈린다.
+
+   퍼블 결함 1건은 **고치지 않고 그대로 이식**한다 — 4점(보통)의 .ty_02 가 2·3점과 같은
+   적색 계열(#ff4a3a)이다(퍼블 L479). 색 개정은 디자인 라운드의 몫이고(CLAUDE.md §2),
+   여기서 임의로 바꾸면 퍼블 정본과 코드가 조용히 갈라진다. css-density.test.js 가
+   이 값을 잠가 "무심코 고치는" 경로를 막는다.
+   =========================================================================== */
+
+/* [S] rating_widget */
+.rating_widget { width: 100%; padding: 1.2rem; border-radius: 0.6rem; background: #f6f7fa; }
+.rating_tit { display: flex; align-items: center; gap: 0.4rem; font-size: 0.95rem; font-weight: 700; color: #333; }
+.rating_tit_icon { width: 1rem; height: 1rem; object-fit: contain; }
+.rating_desc { margin-top: 0.2rem; font-size: 0.7rem; color: #666; padding-left: 1.4rem;}
+.rating_score_list { display: flex; gap: 0.8rem; width: 100%; margin-top: 0.8rem; border: 0; padding: 0; }
+.rating_score_btn { position: relative; flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem; height: 4.5rem; border: 1px solid rgba(0, 0, 0, .12); border-radius: 0.4rem; background: #fff; cursor: pointer; }
+.rating_score_input { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
+.rating_score_face { width: 1rem; height: 1rem; object-fit: contain; }
+.rating_score_num { font-size: 0.95rem; font-weight: 700; color: #333; line-height: 150%}
+.rating_score_btn_tooltip { position: absolute; bottom: calc(100% + 0.5rem); left: 50%; transform: translateX(-50%); display: flex; align-items: center; height: 1.5rem; padding: 0 0.5rem; border-radius: 0.3rem; background: #fff; box-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, .18); color: #1a1a1a; font-size: 0.6rem; font-weight: 600; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .15s; }
+.rating_score_btn_tooltip:before { content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 0.3rem solid transparent; border-top-color: #fff; }
+.rating_score_btn:hover .rating_score_btn_tooltip,
+.rating_score_btn:has(.rating_score_input:focus-visible) .rating_score_btn_tooltip,
+.rating_score_btn:has(.rating_score_input:checked) .rating_score_btn_tooltip { opacity: 1}
+.rating_score_btn.ty_01 { border-color: #454545; background-color : #FAFAFA }
+.rating_score_btn.ty_01 .rating_score_num { color: #454545; }
+.rating_score_btn.ty_02 { border-color: #ff4a3a; }
+.rating_score_btn.ty_02 .rating_score_num { color: #ff4a3a; }
+.rating_score_btn.ty_03 { border-color: #239a39; }
+.rating_score_btn.ty_03 .rating_score_num { color: #239a39; }
+.rating_score_btn.ty_04 { border-color: var(--primary);  }
+.rating_score_btn.ty_04 .rating_score_num { color: var(--primary); }
+.rating_score_btn:has(.rating_score_input:focus-visible) { outline: 2px dashed var(--focus-ring); outline-offset: 2px; }
+.rating_score_btn.ty_01:has(.rating_score_input:checked) { background: rgba(69, 69, 69, .1); }
+.rating_score_btn.ty_02:has(.rating_score_input:checked) { background: rgba(255, 74, 58, .1); }
+.rating_score_btn.ty_03:has(.rating_score_input:checked) { background: rgba(35, 154, 57, .1); }
+.rating_score_btn.ty_04:has(.rating_score_input:checked) { background: rgba(27, 111, 255, .1); }
+.rating_score_caption { display: flex; justify-content: space-between; margin-top: 0.4rem; font-size: 0.7rem; color: #999; }
+.rating_score_caption .txt{ flex: 1}
+.rating_score_caption .txt_01{ text-align: left}
+.rating_score_caption .txt_02{ text-align: center;}
+.rating_score_caption .txt_03{ text-align: right;}
+.rating_widget .form_group { margin-top: 1.6rem; gap: 0.8rem}
+.rating_widget .form_group .form_label{ font-size: 0.8rem; line-height: 100%;}
+.rating_comment { height: 7rem; padding: 0.4rem 0.8rem; resize: none; border: 1px solid #666;}
+.rating_optional { color: #999; font-weight: 400; font-size: 0.7rem; margin-left: 0.4rem;}
+.rating_submit_row { display: flex; align-items: center; justify-content: space-between; margin-top: 0.8rem; }
+.rating_count { font-size: 0.75rem; color: #666; }
+.rating_count .rating_comment_count { color: var(--primary); margin-right: 0.1rem;}
+/* [E] rating_widget */
+
+/* [S] node_detail — 노드 상세 모달 (round07b-ext 반입)
+   ===========================================================================
+   round06c D1-7 이 「NodeModal 은 범위 밖」이라며 미이식한 92규칙이다. 그 뒤
+   앱은 Tailwind 자체 구현 + PdfViewerMock + 더미 상수로 비슷한 모양을 만들어
+   뒀는데, 정본도 실데이터도 아닌 중간물이었다. 이번 라운드가 소비처(NodeModal
+   전면 교체, Task 6·7)를 만들면서 함께 들여온다.
+
+   미반입 — 데이터가 없어 마크업이 생기지 않는 것(죽은 CSS 방지 원칙 유지):
+     · 없음. 92규칙 전량을 쓴다. 페이지 이동·인쇄·번역은 **버튼은 그리고**
+       동작만 `준비 중입니다` 토스트라, 마크업이 실제로 존재한다.
+
+   교정 2건 — url() 경로만 손댔다(값·순서는 그대로). 퍼블의 `../img/icon/` 는 퍼블 자신의
+   폴더 기준 상대경로라 앱 트리(src/styles/publish/ → src/assets/icons/)에서는 깨진다.
+   ic_check_primary.svg·ic_arrow_down_white.svg 둘 다 src/assets/icons/ 에 이미 있어
+   `../../assets/icons/` 로 치환했다(§5.7-5, css-contract.test.js D9 자산 가드가 확인).
+   =========================================================================== */
+.node_detail_modal { display: none; position: fixed; left: 50%; top: 50%; z-index: 102; transform: translate(-50%, -50%); flex-direction: column; gap: 1.2rem; width: 64rem; max-width: 94vw; height: 43.6rem; max-height: 90vh; padding: 1.2rem; background: #fff; border-radius: 0.8rem; box-shadow: 0 0.2rem 0.7rem rgba(0, 0, 0, .11); }
+.node_detail_modal.is_active { display: flex; }
+.node_detail_modal_body { flex: 1 1 auto; min-height: 0; display: flex; gap: 0.8rem; width: 100%; overflow: hidden; }
+.node_detail_modal_main { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 0.8rem; }
+.node_detail_modal_meta_head { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; width: 100%; min-height: 3rem; padding: 0.8rem 1.2rem; background: rgba(0, 0, 0, .03); border-radius: 0.4rem; }
+.node_detail_modal_meta_tit { display: flex; align-items: center; gap: 0.4rem; }
+.node_detail_modal_meta_tit_txt { font-size: 0.9rem; font-weight: 600; color: #333; letter-spacing: -0.018rem; }
+.node_detail_modal_meta_tag { display: flex; align-items: center; height: 1rem; padding: 0.2rem 0.6rem; border: 1px solid #1a1a1a; border-radius: 100px; font-size: 0.6rem; font-weight: 600; color: #1a1a1a; line-height: 100%}
+.node_detail_modal_source { flex-shrink: 0; display: flex; align-items: center; gap: 0.25rem; font-size: 0.7rem; font-weight: 500; color: #333; text-decoration: underline; }
+.node_detail_modal_source_icon { width: 1rem; height: 1rem; object-fit: contain; }
+.node_detail_modal_columns { flex: 1 1 auto; min-height: 0; display: flex; width: 100%; }
+.node_detail_modal_foot { flex-shrink: 0; gap: 0.5rem; }
+.node_detail_modal_foot_tag { display: flex; align-items: center; justify-content: center; height: 1rem; padding: 0.2rem 0.5rem; border-radius: 100px; background: #fff; color: var(--primary); font-size: 0.7rem; font-weight: 500; }
+.node_detail_tree { flex-shrink: 0; align-self: flex-start; max-height: 100%; width: 10.5rem; display: flex; flex-direction: column; border: 1px solid #ccc; border-radius: 0.4rem; overflow: hidden auto; }
+.node_detail_tree_row { flex-shrink: 0; display: flex; align-items: center; gap: 0.5rem; width: 100%; min-height: 2.25rem; padding: 0.6rem 0.75rem; background: #fff; border-top: 1px solid rgba(0, 0, 0, .08); }
+.node_detail_tree_row:first-child { border-top: 0; }
+.node_detail_tree_row_toggle { flex: 1 1 0; min-width: 0; display: flex; align-items: center; gap: 0.4rem; border: 0; background: none; padding: 0; font: inherit; text-align: left; cursor: pointer; }
+.node_detail_tree_row_label { flex: 1 1 0; min-width: 0; display: flex; align-items: center; gap: 0.4rem; font-size: 0.7rem; font-weight: 500; color: #333; text-align: left; }
+.node_detail_tree_row_count { flex-shrink: 0; display: flex; align-items: center; justify-content: center; min-width: 2rem; height: 1rem; padding: 0.2rem 0.4rem; border-radius: 100px; background: rgba(0, 0, 0, .03); font-size: 0.7rem; color: #1a1a1a; }
+.node_detail_tree_row_arrow { flex-shrink: 0; width: 1rem; height: 1rem; transition: transform .15s; }
+.node_detail_tree_row.is_open .node_detail_tree_row_arrow { transform: rotate(180deg); }
+.node_detail_tree_row.ty_active { background: var(--primary); }
+.node_detail_tree_row.ty_active .node_detail_tree_row_label { color: #fff; }
+.node_detail_tree_row.ty_active .node_detail_tree_row_count { background: #fff; color: var(--primary); }
+.node_detail_tree_row.ty_active .node_detail_tree_row_arrow { filter: brightness(0) invert(1); }
+.node_detail_tree_row.ty_active .form_check.ty_02 .form_check_label:before { border-color: #fff; background: transparent; }
+.node_detail_tree_row.ty_active .form_check.ty_02 .form_check_input:checked + .form_check_label:before { background: #fff url("../../assets/icons/ic_check_primary.svg") no-repeat center / 55% auto; }
+.node_detail_tree_sub { display: none; position: relative; flex-direction: column; flex-shrink: 0; gap: 0.6rem; width: 100%; max-height: 16.15rem; padding: 0.8rem; overflow-y: auto; background: rgba(27, 111, 255, .05); }
+.node_detail_tree_sub:after { content: ''; position: sticky; left: 0; bottom: -0.8rem; width: 100%; height: 1.2rem; margin-bottom: -1.2rem; background: linear-gradient(to top, #f4f8ff, rgba(244, 248, 255, 0)); pointer-events: none; }
+.node_detail_tree_sub.is_open { display: flex; }
+.node_detail_tree_sub_item { display: flex; align-items: center; width: 100%; gap : .3rem }
+.node_detail_tree_sub_item .form_check { flex: 1 1 0; min-width: 0; }
+.node_detail_tree_sub_item .form_check .form_check_label { align-items: center; gap: 0.4rem; width: 100%; cursor: pointer; }
+.node_detail_tree_sub_item_label { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.7rem; color: #333; }
+.node_detail_viewer  { flex-shrink: 0; width: 33.2rem; min-width: 0; display: flex; flex-direction: column; background: #333; border-radius: 0.4rem 0 0 0.4rem; overflow: hidden; }
+.node_detail_viewer_bar { flex-shrink: 0; display: flex; flex-direction : column; gap: 0.4rem; width: 100%; min-height: 2.8rem; padding: 0.8rem; border-bottom: 1px solid rgba(255, 255, 255, .12); }
+.node_detail_viewer.ty_output .node_detail_viewer_bar { flex-direction: row;}
+.node_detail_viewer.ty_output .node_detail_viewer_name { width : calc(100% - 350px)}
+.node_detail_viewer_name { position : relative; display: block; font-size: 0.8rem; font-weight: 400; color: #fff; white-space: nowrap; text-overflow: ellipsis; overflow : hidden; padding-left : 1.5rem }
+.node_detail_viewer_name_icon { position : absolute; top : -3px; left : 0; width: 1.2rem; height: 1.2rem; object-fit: contain; }
+
+.node_detail_viewer_tools { flex: 1 1 0; min-width: 0; display: flex; align-items: center; gap: 0.8rem; justify-content: space-between;}
+.node_detail_viewer_tools_group { display: flex; align-items: center; gap: 0.4rem; padding-right: 0.8rem; border-right: 1px solid rgba(255, 255, 255, .12); }
+.node_detail_viewer_tools_group.ty_plain { padding-right: 0; border-right: 0; }
+.node_detail_viewer_tool.ty_box { width: 1rem; height: 1rem; border: 1px solid #fff; border-radius: 0.1rem; }
+.node_detail_viewer_tool.ty_box .node_detail_viewer_tool_icon { width: 0.6rem; height: 0.6rem; }
+.node_detail_viewer_tool.ty_fill { width: 1rem; height: 1rem; border-radius: 0.1rem; background: rgba(255, 255, 255, .1); display: flex; align-items: center; justify-content: center; }
+.node_detail_viewer_tool.ty_fill .node_detail_viewer_tool_icon { width: 0.6rem; height: 0.6rem; }
+.node_detail_viewer_tool { width: 1rem; height: 1rem; }
+.node_detail_viewer_tool_icon { width: 100%; height: 100%; object-fit: contain; }
+.node_detail_viewer_11 { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 1rem; height: 1rem; padding: 0; border: 1px solid #fff; border-radius: 0.1rem; background: none; font-size: 0.5rem; color: #fff; }
+.node_detail_viewer_zoom { flex-shrink: 0; display: flex; align-items: center; width: 3.2rem; height: 1rem; border-radius: 0.1rem; background: rgba(255, 255, 255, .1) url("../../assets/icons/ic_arrow_down_white.svg") no-repeat right 0.2rem center / 0.6rem auto; }
+.node_detail_viewer_zoom .dropdown_box_trigger { width: 100%; height: 100%; padding: 0 0.4rem; border: 0; border-radius: 0; background: none; font-size: 0.5rem; color: #fff; gap: 0; }
+.node_detail_viewer_zoom .dropdown_box_value { color: #fff; font-weight: 400; }
+.node_detail_viewer_zoom .dropdown_box_panel_head{ padding: 0.1rem 0.4rem; height: 1rem;}
+.node_detail_viewer_zoom .dropdown_box_panel_head .dropdown_box_value { color: var(--black)}
+.node_detail_viewer_zoom .dropdown_box_panel { padding-bottom: 0.5rem; border-radius: 0; padding-top: 0.1rem;}
+.node_detail_viewer_zoom .dropdown_box_arrow { width: 0.65rem; height: 0.65rem; position: absolute; right: 0.2rem; top: 0.2rem}
+.node_detail_viewer_zoom .dropdown_box_list { gap: 0.2rem}
+.node_detail_viewer_page { flex-shrink: 0; display: flex; align-items: center; height: 1.05rem; padding: 0.2rem 0.6rem; border-radius: 1.5rem; background: rgba(255, 255, 255, .1); font-size: 0.6rem; font-weight: 500; color: #fff; }
+.node_detail_viewer_main { flex: 1 1 auto; min-height: 0; display: flex; gap: 0.8rem; padding: 0.8rem; }
+.node_detail_viewer_thumbs { flex-shrink: 0; display: flex; flex-direction: column; gap: 0.4rem; align-items: center; width: 5.6rem; padding-right: 0.8rem; border-right: 1px solid rgba(255, 255, 255, .12); overflow-y: auto; }
+.node_detail_viewer_thumb { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; width: 100%; background: none; border: 0; padding: 0; }
+.node_detail_viewer_thumb_img { flex-shrink: 0; width: 4rem; height: 4rem; padding: 0.4rem; background: rgba(255, 255, 255, .1); display: flex; align-items: center; justify-content: center; }
+.node_detail_viewer_thumb_img_icon { width: 100%; height: 100%; object-fit: contain; }
+.node_detail_viewer_thumb_num { font-size: 0.6rem; color: #ccc; }
+.node_detail_viewer_thumb.is_active .node_detail_viewer_thumb_num { color: #fff; font-weight: 600; }
+.node_detail_viewer_preview { flex: 1 1 0; min-width: 0; display: flex; align-items: center; justify-content: center; }
+.node_detail_viewer_preview_img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.node_detail_trans { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; border-radius: 0 0.4rem 0.4rem 0; overflow: hidden}
+.node_detail_trans_head { flex-shrink: 0; display: flex; flex-direction: column; gap: 0.8rem; width: 100%; padding: 0.8rem; background: #666; }
+.node_detail_trans_head_top { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+.node_detail_trans_tit { font-size: 0.8rem; font-weight: 600; color: #fff; }
+.node_detail_trans_page { display: flex; align-items: center; gap: 0.2rem; padding: 0.2rem 0.3rem; border-radius: 1.6rem; background: rgba(0, 0, 0, .1); font-size: 0.5rem; color: #fff; }
+.node_detail_trans_page_label { opacity: .6; font-weight: 400; }
+.node_detail_trans_page_value { font-weight: 600; }
+.node_detail_trans_lang { display: flex; align-items: center; gap: 0.4rem; width: 100%; }
+.node_detail_trans_lang .dropdown_box { flex: 1 1 0; min-width: 0; }
+.node_detail_trans_lang .dropdown_box_trigger { width: 100%; height: 1.8rem; padding: 0.2rem 0.4rem 0.2rem 0.6rem; border: 0; border-radius: 0.25rem; background: rgba(255, 255, 255, .1); justify-content: space-between; }
+.node_detail_trans_lang .dropdown_box_value { color: #fff; font-size: 0.7rem; font-weight: 500; }
+.node_detail_trans_lang .dropdown_box_panel_head .dropdown_box_value{ color: var(--black)}
+.node_detail_trans_swap { width: 0.8rem; height: 0.8rem; }
+.node_detail_trans_swap_icon { width: 100%; height: 100%; object-fit: contain; }
+.node_detail_trans_btn { flex-shrink: 0; }
+.node_detail_trans .wrap { flex: 1 1 0; min-height: 0; border: 1px solid #ddd; border-left: none;}
+.node_detail_trans .wrap.ty_02 { border-radius: 0 0 0.4rem 0 }
+.node_detail_trans_body,
+.node_detail_trans_meta { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.8rem; background: #fff; overflow-y: auto; height: 100%}
+.node_detail_trans_meta { padding : 0 0.8rem }
+.node_detail_trans_body_text { font-size: 0.7rem; line-height: 1.5; color: #1e2124; }
+.node_detail_trans_sub_head { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; width: 100%; }
+.node_detail_trans_meta .node_detail_trans_sub_head { padding : .8rem 0 .3rem 0; position : sticky; top : -1px; background-color: #fff }
+.node_detail_trans_sub_tit { font-size: 0.8rem; font-weight: 700; color: #1e2124; }
+.node_detail_trans_actions { display: flex; align-items: center; gap: 0.4rem; }
+.node_detail_trans_action { width: 0.8rem; height: 0.8rem; }
+.node_detail_trans_action_icon { width: 100%; height: 100%; object-fit: contain; }
+.node_detail_trans_meta_list { font-size: 0.7rem; line-height: 1.6; color: #1e2124; white-space: pre-line; }
+
+.node_detail_trans_actions { display: flex; align-items: center; gap: 0.4rem; }
+.node_detail_trans_action { width: 0.8rem; height: 0.8rem; }
+.node_detail_trans_action_icon { width: 100%; height: 100%; object-fit: contain; }
+.node_detail_trans_meta_list { font-size: 0.7rem; line-height: 1.6; color: #1e2124; white-space: pre-line; }
+/* [E] node_detail */
+
+/* [S] round07h — detail_popup 2단(피그마). 퍼블 원본은 1단이라 변형으로 둔다.
+   좌: 이미지 + 메타 3행 / 우: 유물정보 + OCR.
+   좁은 화면에서는 1단으로 되돌린다 — 2단을 억지로 유지하면 양쪽이 다 못 읽힌다. */
+.detail_popup_content.ty_two_col .detail_popup_body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: .5rem;
+  align-items: start;
+}
+.detail_popup_content.ty_two_col .detail_popup_col_left,
+.detail_popup_content.ty_two_col .detail_popup_col_right {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  min-width: 0;
+  align-items: stretch;
+}
+.detail_popup_content.ty_two_col .detail_popup_col_right {
+	height : 100%; background-color : #f7f7f7; padding : .8rem; border-radius : .5rem;
+  overflow-y: auto;
+}
+
+
+.detail_popup_ocr { height : 50%  }
+.detail_popup_ocr_body  { height : calc(100% - 40px)}
+.detail_popup_ocr_title { display : flex; justify-content: space-between; align-items : center }
+
+
+
+.toggle_btn_wrap { background-color: #fff; border : 1px solid #CCCCCC; padding : .3rem; border-radius : 5px; margin-right : .3rem }
+
+
+@media (max-width: 900px) {
+  .detail_popup_content.ty_two_col .detail_popup_body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .detail_popup_content.ty_two_col .detail_popup_col_right {
+    max-height: none;
+  }
+}
+/* [E] round07h */

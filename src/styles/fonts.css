@@ -1,0 +1,61 @@
+/* 이 파일의 책임: Pretendard 웹폰트 @font-face 6종(300·400·500·600·700·800)을
+   로컬 자산으로 선언한다. 퍼블 원본 workspace/design/publish-v1/font/pretendard.css
+   48줄을 그대로 옮기되 경로만 바꿨다(../font/ → ../assets/fonts/).
+
+   왜 CDN 이 아니라 로컬인가: jsdelivr 의존은 사내망(폐쇄망) 배포에서 폰트가 깨진다.
+   왜 public/ 이 아니라 src/assets/ 인가: Vite 가 번들에 넣고 파일명에 해시를 붙여
+   캐시 무효화가 자동이 되며, 경로 오타가 런타임 404 가 아니라 빌드 실패로 잡힌다.
+   왜 index.html <link> 가 아니라 CSS @import 인가: CSS 안에서 import 해야 Vite 가
+   url() 을 해석해 해시 경로로 재작성한다. <link> 로는 이 처리가 되지 않는다.
+
+   상대 경로 기준은 이 파일이 있는 src/styles/ 다 — 그래서 ../assets/fonts/ 다.
+   font-display: swap 과 woff2→woff 폴백 순서는 퍼블 원본 그대로 둔다. */
+
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('../assets/fonts/Pretendard-Light.woff2') format("woff2"),
+       url('../assets/fonts/Pretendard-Light.woff') format("woff");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/Pretendard-Regular.woff2') format("woff2"),
+       url('../assets/fonts/Pretendard-Regular.woff') format("woff");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../assets/fonts/Pretendard-Medium.woff2') format("woff2"),
+       url('../assets/fonts/Pretendard-Medium.woff') format("woff");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../assets/fonts/Pretendard-SemiBold.woff2') format("woff2"),
+       url('../assets/fonts/Pretendard-SemiBold.woff') format("woff");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../assets/fonts/Pretendard-Bold.woff2') format("woff2"),
+       url('../assets/fonts/Pretendard-Bold.woff') format("woff");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('../assets/fonts/Pretendard-ExtraBold.woff2') format("woff2"),
+       url('../assets/fonts/Pretendard-ExtraBold.woff') format("woff");
+}

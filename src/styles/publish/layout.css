@@ -1,0 +1,184 @@
+/* 이 파일의 책임: 퍼블리싱 정본 workspace/design/publish-v2/css/layout.css 의 반입본(전량, v1→v2 갱신).
+   §5.6 규칙 4 — 읽기 전용에 준한다. 값 변경은 spec에 근거를 적은 경우에만 한다.
+
+   R6c-ext A1 — v2 전면 반입. v1 대비 주요 변경:
+     · 스크롤 소유권 전략이 바뀌었다 — v1은 round06d가 min-height:100vh→height:100vh +
+       overflow-y:auto를 수동으로 교정했지만(구 버전 이 자리의 주석 참조), v2는 자체적으로
+       .lnb를 position:sticky로 바꾸고 부모(.intro_wrap/.mng_wrap)를 min-height:100vh +
+       overflow-x:clip으로 둬 문서 스크롤 하나로 통일했다(주석 원문 유지, 아래 [S] intro_wrap
+       참조). round06d 수동 교정을 대체하는 v2 자체 해법이라 그대로 반입한다 — AppShell.jsx는
+       className만 토글할 뿐 스크롤 메커니즘을 JS로 가정하지 않아 안전하다(실측: AppShell.jsx).
+     · .lnb_menu의 자식 선택자가 전부 명시 클래스로 바뀌었다(a→.lnb_menu_link,
+       li→.lnb_menu_item, img→.lnb_menu_icon, span→.lnb_menu_label). 유일 소비처 Lnb.jsx는
+       바로 다음 과업 A2가 v2 클래스로 다시 쓰므로 그대로 반입한다(§4 디자인 참조 — A2가
+       소비처를 즉시 정합).
+     · .auth_wrap 하위 3건도 같은 방식으로 명시 클래스화됐다(auth_logo img→.auth_logo_img,
+       .auth_head .ic_back img→.ic_back_img, .auth_link_row a→.auth_link_row_link). 소비처
+       AuthLayout.jsx·Login/Join/FindAccount.jsx는 이번 라운드 D2d가 v2 마크업 정합을
+       맡으므로(로드맵 확인) 그대로 반입한다.
+     · .history_menu(케밥 드롭다운 — A2 소비)·.library_wrap/.library_main(라이브러리 셸,
+       향후 과업 소비) 신규 섹션 추가.
+   상대 경로 기준 디렉터리는 이 파일이 있는 src/styles/publish/ 다.
+   이 파일에는 url() 참조가 0개여서 §5.7-5의 경로 치환 대상이 아니다(실측, v1·v2 동일). */
+
+/* layout.css : 화면 구조(레이아웃) 스타일 */
+
+/* [S] auth_wrap */
+/* 단위 규칙: border 1px 등 예외를 제외하고 rem 사용 (html/body font-size: 20px 기준, 1rem = 20px) */
+.auth_wrap { position: relative; width: 100%; min-height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; padding: 4rem 1.2rem; }
+.auth_inner { position: relative; z-index: 1; width: 100%; max-width: 24rem; display: flex; flex-direction: column; align-items: center; gap: 2rem; }
+.auth_logo { display: flex; justify-content: center; width: 100%; }
+.auth_logo_img { height: 2.4rem; }
+.auth_footer_txt { font-size: 0.6rem; font-weight: 400; line-height: 1.5; color: #666; text-align: center; letter-spacing: 0; }
+
+.auth_head { display: flex; align-items: center; gap: 0.4rem; }
+.auth_head .ic_back { display: flex; width: 1.2rem; height: 1.2rem; flex-shrink: 0; }
+.ic_back_img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.auth_head .auth_head_tit { font-size: 0.9rem; font-weight: 700; color: var(--black); line-height: 1.3rem; }
+
+.auth_link_row { display: grid; grid-template-columns: repeat(2, 1fr); width: 100%; }
+.auth_link_row_link { display: flex; align-items: center; justify-content: center; padding: 0 1.95rem; font-size: 0.6rem; font-weight: 400; line-height: 1.5; color: #666; }
+.auth_link_row_link:first-child { border-right: 1px solid rgba(0, 0, 0, .12); }
+/* [E] auth_wrap */
+
+/* [S] intro_wrap */
+.intro_wrap { position: relative; width: 100%; min-height: 100vh; display: flex; padding: 0.8rem; overflow-x: clip; }
+
+/* sticky top은 0.8rem(부모 padding과 동일 값)만큼 간격을 두고 상단에 붙는다 —
+   부모(.intro_wrap/.mng_wrap)에 overflow-y가 hidden/auto로 걸리면 sticky가 그 부모 기준으로 묶여 동작하지 않는다.
+   overflow-x만 hidden으로 주면 CSS 스펙상 overflow-y가 자동으로 auto로 승격되는 부작용이 있어(overflow-x/y 중 하나만
+   visible이 아니면 나머지도 자동 승격됨), 그 승격을 피하려고 hidden 대신 overflow-x: clip을 쓴다(clip은 승격 예외) */
+.lnb { position: sticky; top: 0.8rem; z-index: 1; flex-shrink: 0; width: 16rem; height: calc(100vh - 1.6rem); background: #fff; border-radius: 0.8rem; box-shadow: 0 0.2rem 0.5rem rgba(59, 118, 231, .15); padding: 1.2rem 0.8rem; display: flex; flex-direction: column; gap: 1.2rem; transition: width .2s ease, padding .2s ease; }
+.lnb.is_collapsed { width: 3.6rem; padding: 1.2rem; gap: 0.8rem; }
+
+.intro_main { flex: 1 1 0; min-width: 0; display: flex; align-items: center; justify-content: center; padding: 2rem; position: relative; z-index: 1; }
+.intro_content { width: 100%; max-width: 50rem; display: flex; flex-direction: column; align-items: center; }
+.intro_search_card, .intro_questions, .intro_disclaimer { margin-top: 3rem; }
+/* [E] intro_wrap */
+
+/* [S] lnb_top */
+.lnb_top { display: flex; flex-direction: column; gap: 1.2rem; width: 100%; }
+.lnb_head { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+.lnb_logo { height: 1.6rem; display: flex; align-items: center; }
+/* round06d 후속 #1 — 로고를 홈 링크로 감쌌다(Lnb.jsx). <a>가 .lnb_logo(1.6rem) 높이를
+   그대로 이어받게 해 안쪽 img의 height:100%가 무너지지 않도록 한다. 퍼블 원본엔 없던 규칙이다. */
+.lnb_logo a { display: flex; align-items: center; height: 100%; }
+.lnb_logo_full { display: block; height: 100%; width: auto; }
+.lnb_toggle { width: 1.6rem; height: 1.6rem; }
+.lnb_toggle_icon, .lnb_logo_mark { display: block; object-fit: contain; transition: transform .2s ease; }
+.lnb_toggle_icon { width: 0.925rem; height: 0.925rem; }
+.lnb_toggle .lnb_logo_mark { display: none; width: 0.984rem; height: 1.6rem; }
+.lnb.is_collapsed .lnb_toggle_icon { display: none; }
+.lnb.is_collapsed .lnb_toggle .lnb_logo_mark { display: block; }
+.lnb_new_btn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; height: 3rem; border: 0; border-radius: 0.5rem; background: var(--primary); }
+.lnb_new_icon { width: 1.2rem; height: 1.2rem; flex-shrink: 0; object-fit: contain; }
+.lnb_new_txt { font-size: 0.9rem; font-weight: 700; color: #fff; }
+.lnb.is_collapsed .lnb_new_btn,
+.lnb.is_collapsed .lnb_logo,
+.lnb.is_collapsed .lnb_divider,
+.lnb.is_collapsed .lnb_history,
+.lnb.is_collapsed .lnb_profile_info,
+.lnb.is_collapsed .lnb_logout { display: none; }
+.lnb.is_collapsed .lnb_top { align-items: center; gap: 0.8rem; }
+.lnb.is_collapsed .lnb_head { justify-content: center; }
+.lnb.is_collapsed .lnb_toggle { width: 1.6rem; height: 1.6rem; }
+.lnb.is_collapsed .lnb_profile { justify-content: center; padding : 0 }
+
+/* [E] lnb_top */
+
+/* [S] lnb_menu */
+.lnb_menu { display: flex; flex-direction: column; width: 100%; }
+.lnb_menu_item { width: 100%; }
+.lnb_menu_link { display: flex; align-items: center; gap: 0.6rem; width: 100%; height: 2.5rem; padding: 0 0.4rem; border-radius: 0.4rem; font-size: 0.8rem; font-weight: 600; color: #1a1a1a; }
+.lnb_menu_link.active { background: rgba(0, 0, 0, .03); }
+.lnb_menu_icon { width: 0.8rem; height: 0.8rem; flex-shrink: 0; object-fit: contain; }
+.lnb.is_collapsed .lnb_menu { flex: 1 1 auto; min-height: 0; }
+.lnb.is_collapsed .lnb_menu_link { justify-content: center; padding: 0; }
+.lnb.is_collapsed .lnb_menu_link.active { background: none; }
+.lnb.is_collapsed .lnb_menu_label { display: none; }
+/* [E] lnb_menu */
+
+/* [S] lnb_divider */
+.lnb_divider { width: 100%; height: 1px; background: rgba(0, 0, 0, .12); flex-shrink: 0; }
+/* [E] lnb_divider */
+
+/* [S] lnb_history */
+.lnb_history { flex: 1 1 0; min-height: 0; width: 100%; display: flex; flex-direction: column; gap: 0.8rem; padding-bottom: 1.2rem; }
+.lnb_history_tit { font-size: 0.6rem; font-weight: 700; color: #333; }
+.lnb_history_list { display: flex; flex-direction: column; gap: 0.4rem; width: 100%; }
+.lnb_history_item { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 0.4rem; width: 100%; padding: 0.6rem 0.4rem; border-radius: 0.4rem; }
+.lnb_history_link { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; padding: 0; border: 0; background: none; }
+.lnb_history_txt { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.7rem; font-weight: 400; line-height: 1.5; color: #333; text-align: left; }
+.lnb_history_item.is_active { background: var(--primary10); }
+.lnb_history_item.is_active .lnb_history_txt { font-weight: 500; }
+.lnb_history_more { width: 1.2rem; height: 1.2rem; border-radius: 0.4rem; }
+.lnb_history_more .ic_kebab { width: 0.8rem; height: 0.8rem; flex-shrink: 0; object-fit: contain; }
+/* [E] lnb_history */
+
+/* [S] history_menu — 나의 기록 항목 더보기(kebab) 드롭다운 메뉴. v2 신규(A2 소비). */
+.history_menu { display: none; position: absolute; top: 100%; right: 0.4rem; z-index: 20; flex-direction: column; align-items: stretch; gap: 0.2rem; padding: 0.4rem 0.4rem; background: #fff; border-radius: 0.4rem; box-shadow: 0 0.1rem 0.6rem rgba(0, 0, 0, .1); }
+.history_menu.is_active { display: flex; }
+.history_menu_item { padding: 0.4rem 0.5rem; border: 0; background: none; border-radius: 0.2rem; font-size: 0.7rem; font-weight: 500; color: #333; text-align: center; white-space: nowrap; }
+.history_menu_item:hover, .history_menu_item:focus-visible { background: rgba(0, 0, 0, .04); }
+/* [E] history_menu */
+
+/* [S] lnb_profile */
+.lnb_profile { display: flex; align-items: center; gap: 0.4rem; width: 100%; padding: 0 0.4rem}
+.lnb_profile_avatar { width: 2rem; height: 2rem; flex-shrink: 0; border-radius: 50%; }
+.lnb_profile_info { flex: 1 1 0; min-width: 0; }
+.lnb_profile_name { display: flex; align-items: baseline; gap: 0.2rem; font-size: 0.8rem; font-weight: 500; color: #333; }
+.lnb_profile_role { font-size: 0.7rem; font-weight: 500; color: #999; }
+.lnb_profile_email { font-size: 0.6rem; font-weight: 400; color: #999; }
+.lnb_logout { width: 1.2rem; height: 1.2rem; }
+.lnb_logout_icon { display: block; width: 100%; height: 100%; object-fit: contain; }
+.lnb.is_collapsed .lnb_profile { justify-content: center; }
+.lnb.is_collapsed .lnb_profile_avatar { width: 1.2rem; height: 1.2rem; }
+/* [E] lnb_profile */
+
+/* [S] intro_hero */
+.intro_hero { display: flex; flex-direction: column; align-items: center; }
+.intro_orb { width: 8.15rem; height: 7.6rem; }
+.intro_logo_lockup { margin-top: 0.5rem; display: flex; flex-direction: column; align-items: center; gap: 0.75rem; }
+.intro_wordmark { width: 9.25rem; height: 2.25rem; }
+.intro_subtitle { font-size: 1rem; font-weight: 700; color: #1a1a1a; text-align: center; }
+/* [E] intro_hero */
+
+/* [S] intro_search_card */
+.intro_search_card { width: 100%; background: #f4f5f6; border-radius: 1.25rem; padding: 0.25rem; display: flex; flex-direction: column; gap: 0.15rem; }
+.intro_search_notice { display: flex; align-items: center; gap: 0.5rem; height: 3rem; padding-left: 1rem; }
+.intro_search_notice_icon { width: 1rem; height: 1rem; flex-shrink: 0; object-fit: contain; }
+.intro_search_notice_txt { font-size: 0.8rem; font-weight: 500; color: #333; }
+.intro_search_box { display: flex; align-items: center; width: 100%; background: #fff; border: 1px solid transparent; border-radius: 1rem; padding: 0.5rem 0.5rem 0.5rem 1rem; }
+.intro_search_box:focus-within { border-color: var(--primary); box-shadow: 0 0 0 0.15rem var(--primary20); }
+.intro_search_input { flex: 1 1 auto; min-width: 0; border: 0; outline: 0; background: transparent; padding: 0; font-size: 0.9rem; font-weight: 400; color: #333; margin-left : 10px }
+.intro_search_input::placeholder { color: #666; font-size: 0.9rem;}
+.intro_search_btn { flex-shrink: 0; width: 2.5rem; height: 2.5rem; border: 0; border-radius: 0.75rem; background: #283483; display: flex; align-items: center; justify-content: center; }
+.intro_search_btn_icon { width: 1rem; height: 1rem; object-fit: contain; }
+/* [E] intro_search_card */
+
+/* [S] intro_questions */
+.intro_questions { width: 100%; display: flex; flex-direction: column; gap: 0.5rem; }
+.intro_questions_tit { display: flex; align-items: center; gap: 0.75rem; }
+.intro_questions_tit_icon { width: 1.386rem; height: 1.25rem; flex-shrink: 0; object-fit: contain; }
+.intro_questions_tit_txt { font-size: 0.8rem; font-weight: 600; color: #1a1a1a; }
+.intro_questions_list { width: 100%; display: flex; gap: 0.5rem; }
+.intro_question_card { flex: 1 1 0; min-width: 0; padding: 1rem; border-radius: 0.5rem; background: #fff; border: 1px solid #ccc; font-size: 0.7rem; font-weight: 400; line-height: 1.5; color: #333; text-align: center; }
+.intro_question_card:hover,
+.intro_question_card:focus-visible { border-color: #283483; color: #283483; outline: 0; }
+/* [E] intro_questions */
+
+/* [S] intro_disclaimer */
+.intro_disclaimer { display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.65rem; font-weight: 400; color: #999; margin-top: 4.6rem; }
+.intro_disclaimer_icon { width: 1rem; height: 1rem; flex-shrink: 0; object-fit: contain; }
+/* [E] intro_disclaimer */
+
+/* [S] mng_wrap */
+.mng_wrap { position: relative; width: 100%; min-height: 100vh; display: flex; gap: 0.8rem; padding: 0.8rem; overflow-x: clip; }
+.mng_main { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
+.mng_page_tit { width: 100%; padding: 2rem 0; font-size: 2rem; font-weight: 700; color: #1a1a1a; text-align: center; }
+/* [E] mng_wrap */
+
+/* [S] library_wrap — 라이브러리 셸(향후 과업 소비, 구조는 mng_wrap과 동일). v2 신규. */
+.library_wrap { position: relative; width: 100%; min-height: 100vh; display: flex; gap: 0.8rem; padding: 0.8rem; overflow-x: clip; }
+.library_main { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
+/* [E] library_wrap */

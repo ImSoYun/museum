@@ -1,0 +1,18 @@
+node_modules/
+dist/
+dist-tsconfig-node/
+*.tsbuildinfo
+.env
+.env.local
+.env.*.local
+*.log
+# Vercel CLI 링크(프로젝트 ID·조직 ID) — 커밋 금지
+.vercel
+# Playwright 산출물 — R6d-27b에서 e2e 골격이 생기며 발생한다(prototype/.gitignore와 동일 항목).
+test-results/
+playwright-report/
+playwright/.cache/
+
+.vercel
+.env*
+e2e/.auth/

@@ -1,0 +1,136 @@
+/* 이 파일의 책임: 퍼블 reset.css(316줄) 중 §5.2.3이 "반입"으로 판정한
+   폼 컨트롤 · 체크박스 · 라디오 · 비활성 상태 규칙만 옮긴 것.
+
+   버린 것과 그 이유(§5.2.3 · §5.5):
+     L2~142  Meyer 태그 리셋      → Tailwind preflight가 동일 역할
+     L143    전역 리셋 규칙        → preflight와 충돌. line-height는
+                                    tailwind-base.css의 html,body{line-height:1.3}로 등가 치환
+     L169~187 CSS 변수 정의        → src/styles/tokens.css로 병합(D8 토큰 단일 출처)
+     L189~196 제목 font-weight     → 퍼블 마크업이 제목마다 명시 클래스를 준다
+     L198~219 속성 선택자 규칙     → Tailwind 클래스와 충돌
+     L221~224 버튼 테두리 규칙     → Tailwind 버튼 박스를 2px 늘린다
+     L226~228 이미지 display 규칙  → preflight는 block, 퍼블은 개별 선언
+     L144~167 · L248 · L308~316   → tailwind-base.css의 @layer base로 이동
+
+   반입 시 적용한 교정 3건:
+     ① L229 ::placeholder 폰트 크기 → 0.7rem — 0.05rem 그리드에 정렬(§5.5 충돌 2)
+     ② L260 outline 색상 → var(--focus-ring) — 최신 토큰값 적용(§5.3 교정 4)
+     ③ 자산 경로 재설정 → assets 폴더 기준으로 재작성(§5.7-5).
+        경로 오류 시 체크박스 체크 표시가 404가 된다
+
+   R6c-ext A1 — v2 reset.css 대조 후 적용한 값 갱신 2건(둘 다 클래스명 변경이 아니라
+   순수 값 변경이라 소비처 JSX 수정 없이 안전하게 반영):
+     ④ ::placeholder — v2가 font-size를 고정값이 아니라 inherit로 바꿨다. input 자신의
+        font-size가 0.7rem(바로 아래 규칙)이라 상속 결과는 교정①의 0.7rem과 동일하다 —
+        교정①의 "0.05rem 그리드 정렬"이 v2에서 상속 방식으로 다시 확인된 셈이라 유지하되
+        color·font-weight는 v2 값(var(--gray70)·400)으로 갱신한다.
+     ⑤ 폼 컨트롤 글자색 var(--gray80) → var(--black) — v2 리터럴(#1a1a1a)이 --black과
+        일치해 토큰으로 흡수(리터럴을 토큰 체계 밖에 남기지 않는다, component.css 헤더와 같은 원칙).
+
+   R6c-ext A1 — v2에서 발견했으나 의도적으로 반입하지 않은 것(§4 디자인 참조 "미참조 사유"):
+     · .form_check_input/.form_check_label 클래스 분리(v2는 input[type=checkbox]/label을
+       .form_check_input/.form_check_label로 명시 클래스화) — 유일 소비처 DataTable.jsx가
+       여전히 클래스 없는 input/label을 렌더한다(이번 라운드 어떤 과업도 DataTable.jsx를
+       고치지 않는다). 지금 선택자를 바꾸면 자료관리 5화면 전부의 체크박스 커스텀 표시가
+       깨진다 — 그래서 이번엔 v1 그대로(요소 선택자) 유지한다.
+     · .select_box_wrap/.select_box 베이스 규칙 삭제 — v2는 이 두 규칙을 reset.css에서
+       완전히 뺐다(신설 .dropdown_box 컴포넌트로 대체하는 흐름). 그런데 v2 CSS 전체
+       어디에도 .select_box 정의가 없다 — 즉 v2는 select_box 개념 자체를 폐기했다.
+       현재 component.css(.select_box select 등)·DataFilterBar.jsx는 아직 select_box를
+       쓰고, 이번 라운드에 그 마이그레이션 과업이 없다. 삭제하면 그 소비처들의 위치·화살표
+       배치가 깨지므로 유지한다.
+
+   §5.6 규칙 4 — 이 파일은 읽기 전용에 준한다. 값을 바꿔야 하면 spec에 근거를 적는다.
+   상대 경로 기준 디렉터리는 이 파일이 있는 src/styles/publish/ 다. */
+
+/* reset.css L229 (교정 ①, v2로 갱신 — 교정 ④) */
+::placeholder { font-size: inherit; color: var(--gray70); font-weight: 400}
+
+/* reset.css L230~247 — 폼 컨트롤 기본 치수.
+   preflight가 font-size:100%·padding:0·border-width:0으로 벗겨 놓은 위에
+   요소 선택자(0,0,1)로 얹는다. 퍼블이 이기는 것이 의도한 결과다(§5.5 충돌 2) —
+   이 치수가 디자인 시스템의 폼 기본값이기 때문이다.
+   Tailwind 유틸(0,1,0)이 요소 선택자를 항상 이기므로 재정의는 언제든 가능하다. */
+input,
+select,
+textarea {
+    border: 1px solid var(--gray40);
+    border-radius: 0.4rem;
+    font-size: 0.7rem;
+    padding: 0 0.5rem;
+    height: 2.25rem;
+    color: var(--black); /* v2 갱신 — 교정 ⑤ */
+}
+select {
+    padding-right: 1.2rem;
+    background: var(--white);
+    appearance: none; /* 브라우저 기본 화살표 제거 — component.css .select_box의 커스텀 화살표와 짝 */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    display: inline-block;
+}
+
+/* reset.css L249~251 — component.css .select_box 규칙의 전제 */
+.select_box_wrap{ display: inline-flex; align-items: center}
+.select_box { position: relative; display: inline-flex; max-width: 100%; align-items: center}
+.select_box.sz_s select{ border-radius: 0; border: none; padding-right: 0.75rem; height: 0.75rem; font-size: 0.6rem; font-weight: 400; padding-left: 0.25rem;}
+
+/* reset.css L253~267 — 체크박스(시각적 숨김 input + label:before 대체) */
+.form_check_wrap{ display: flex; flex-wrap: wrap; gap: 0.5rem 1rem}
+
+.form_check {display: inline-flex;align-items: flex-start}
+.form_check input[type=checkbox] { position: absolute !important; width: 1px !important; height: 1px !important;padding: 0 !important;margin: -1px !important;overflow: hidden !important;clip-path: inset(50%) !important;white-space: nowrap !important;border: 0 !important}
+.form_check label { display: flex; gap: 0.5rem; position: relative}
+/* 실제 input은 1px로 시각적으로 숨겨져 있어 기본 outline이 그 위치(잘 안 보이는 지점)에 그려짐 — 포커스 표시는 눈에 보이는 label:before 체크박스 쪽에 그려지도록 이동 */
+.form_check input[type=checkbox]:focus-visible { outline: 0; }
+.form_check input[type=checkbox]:focus-visible + label:before { outline: 2px dashed var(--focus-ring); outline-offset: 2px; }
+
+.form_check.ty_01 label{ gap: 0.5rem; font-size: 0.6rem; font-weight: 500; align-items: center; line-height: 100%; color: var(--black);}
+.form_check.ty_01 label:before { content: ""; width: 0.75rem; height: 0.75rem; border-radius: 0.15rem; border: solid 1px #ccc; background: var(--white); display: inline-flex; flex-shrink: 0; position: relative; top: 1px}
+.form_check.ty_01 input[type=checkbox]:checked + label:before { background: var(--black) url("../../assets/icons/ic_check.svg") no-repeat center / 60% auto; border-color: transparent}
+/* ty_02 : 테이블 행 선택용 체크박스 — ty_01보다 크고 사각형에 가까움 */
+.form_check.ty_02 label:before { content: ""; width: 0.8rem; height: 0.8rem; border-radius: 0.2rem; border: solid 1px rgba(0, 0, 0, .12); background: #fff; display: inline-flex; flex-shrink: 0; }
+.form_check.ty_02 input[type=checkbox]:checked + label:before { background: var(--primary) url("../../assets/icons/ic_check.svg") no-repeat center / 55% auto; border-color: var(--primary); }
+
+/* reset.css L269~289 — 라디오 */
+.form_radio_wrap{ display: flex; flex-wrap: wrap; align-items: center}
+.form_radio_wrap.ty_01{ gap: 2rem}
+
+.form_radio {display: inline-flex;align-items: center; flex-shrink: 0}
+.form_radio.full { width: 100%; flex-shrink: 1}
+.form_radio.full label{ flex-shrink: 0}
+.form_radio.full input[type='text']{ width: 100%; flex-shrink: 1}
+.form_radio input[type=radio] { position: absolute !important; width: 1px !important; height: 1px !important;padding: 0 !important;margin: -1px !important;overflow: hidden !important;clip-path: inset(50%) !important;white-space: nowrap !important;border: 0 !important}
+.form_radio label { display: flex; gap: 0.25rem; position: relative}
+.form_radio label:after { position: absolute; left: 0; top: 0; display: none}
+.form_radio label:after,
+.form_radio label:before { flex-shrink: 0}
+.form_radio input[type='text'] { margin-left: 1rem}
+
+.form_radio.ty_01 label{ font-size: 0.7rem; font-weight: 600; color: var(--gray80);}
+.form_radio.ty_01 label:before,
+.form_radio.ty_01 label:after { content: ""; border-radius: 50%; border: solid 1px transparent;}
+.form_radio.ty_01 label:before { width: 0.9rem; height: 0.9rem; border: solid 1px var(--gray40); background: var(--white)}
+.form_radio.ty_01 label:after { width: 0.5rem; height: 0.5rem; background: #5d5d5d; left: 0.2rem; top: 0.2rem}
+.form_radio.ty_01 input[type=radio]:checked + label:before { border-color: #5d5d5d}
+.form_radio.ty_01 input[type=radio]:checked + label:after { display: block}
+
+/* reset.css L292~294 — 접근성 */
+@media (prefers-reduced-motion: reduce) {
+    .form_check * {transition: none !important}
+}
+
+/* reset.css L296 */
+button { cursor: pointer; display: inline-block}
+
+/* reset.css L297~306 — 비활성 상태 정본 */
+select[disabled="disabled"],
+input[readonly="readonly"],
+input[readonly],
+input[disabled="disabled"],
+input[disabled],
+select[readonly],
+textarea[readonly] {
+    background-color: #F6F7FA !important;
+    color: #667183 !important;
+}

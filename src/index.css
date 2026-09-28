@@ -1,0 +1,18 @@
+/* 이 파일의 책임: 스타일시트 로드 순서를 정하는 매니페스트. 규칙을 직접 갖지 않는다.
+   postcss-import가 @import를 파일 선두에서만 인라인하므로, 순서 제어는
+   "이 파일이 @import 목록만 갖는 것"으로만 가능하다(spec §5.4.4 · tailwind-base.css 주석).
+
+   최종 캐스케이드 순서:
+     tokens (variables) → fonts(@font-face) → preflight+base → [퍼블 CSS] → Tailwind utilities
+
+   상대 경로 기준 디렉터리는 이 파일이 있는 src/ 다. */
+@import './styles/tokens.css';
+@import './styles/fonts.css';
+@import './styles/tailwind-base.css';
+@import './styles/publish/reset-forms.css';
+@import './styles/publish/common-kept.css';
+@import './styles/publish/layout.css';
+@import './styles/publish/component.css';
+@import './styles/publish/flatpickr.min.css';
+@import './styles/publish-ext.css';
+@import './styles/tailwind-utilities.css';

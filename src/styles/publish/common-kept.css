@@ -1,0 +1,46 @@
+/* 이 파일의 책임: 퍼블 common.css(1,504줄) 중 실제 참조되는 규칙만 발췌한 것.
+   판정 기준은 추측이 아니라 실납품 10화면(page/*.html)과 js/common.js에서의
+   grep 실측 참조 횟수다.
+
+   폐기한 1,418줄의 대표 근거(§5.2.4):
+     L306~1495 mt_/mb_/pt_/pl_ … 스페이싱 유틸 1,190줄 → Tailwind m-* / p-* + md:/sm:
+     (주의: 이 주석 안에 '별표 다음 슬래시'를 붙여 쓰면 1행에서 연 주석이 여기서 조기 종료돼
+      바로 아래 .sr_only 규칙까지 깨진다. 반드시 사이를 띄운다. 가드: css-comments.test.js)
+     L216~244  .fz_12~.fz_40 29줄                    → §5.4의 px 명명 fontSize 스케일
+     L277~303  .w_*p 27줄                            → <col className="w-[45%]"/> 임의값
+     L49~56·152~153·120~125 라이브러리 미채택        → slick/swiper/date-picker
+     L42~46 .breadcrumb · L134~138 .layer_popup      → 참조 0회(§6.4 빵부스러기 폐기)
+     L2~15  CSS 변수                                  → src/styles/tokens.css로 병합
+
+   §5.6 규칙 4 — 읽기 전용에 준한다.
+
+   R6c-ext A1 — v2 common.css 대조 결과:
+     · .sr_only 그룹에 border: none 추가(값만 변경, 클래스 불변 — 안전 반영).
+     · .btn — v2는 이 규칙을 common.css에서 component.css로 옮겼다(line-height: 100%
+       추가). 캐스케이드 순서(reset→common→layout→component)는 이 파일이 어디 있든
+       바뀌지 않으므로 실제 동작에 차이가 없다 — 파일만 옮기는 변경은 하지 않고,
+       이 파일의 기존 위치를 유지한 채 값만 v2로 갱신한다(불필요한 구조 이동 지양).
+     · .dim/.dim.is_active — v1·v2 동일, 변경 없음. */
+
+/* common.css L27~30 — .sr_only 64회 · <caption> 5화면.
+   ⚠ .hidden은 Tailwind의 hidden 유틸과 이름이 같다. 지금은 className으로 쓰인
+   곳이 0이라 공존하지만(css-contract.test.js의 충돌 검사가 지킨다), 새 코드에서
+   className="hidden"을 쓰면 두 정의가 한 요소에서 만난다. 감추려면 조건부 렌더나
+   .sr_only를 쓴다. .hidden·.ir_text는 참조 0회지만 한 선택자 목록이라 분리 이득이 없다. */
+caption,
+.hidden,
+.ir_text,
+.sr_only { width: 1px; height: 1px; overflow: hidden; color: transparent; position: absolute; text-indent: -999px; border: none}
+
+/* common.css L72~73 · L81~82 — .btn 48회.
+   login·join·find의 제출 버튼 3개가 전부 class="btn btn_lg btn_primary"다.
+   v2에서 line-height: 100% 추가(파일은 component.css로 옮겨졌으나 이 파일에 유지 — 위 주석). */
+.btn { display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; gap: 0.32rem; flex-shrink: 0; line-height: 100%;}
+.btn img{ object-fit: contain; object-position: center}
+.btn:focus,
+.btn:hover{ text-decoration: none}
+
+/* common.css L132~133 — 7화면(main · admin_dashboard · manage_* 5, 실측).
+   component.css .alert_popup(z-index 102)의 배경이다. */
+.dim { width: 100%; height: 100%; position: fixed; left: 0; top: 0; background: rgba(0, 0, 0, 0.5); z-index: 101; display: none}
+.dim.is_active { display: block; }

@@ -1,0 +1,5 @@
+/* 이 파일의 책임: Tailwind utilities 레이어의 주입 지점.
+   반드시 퍼블 CSS import 뒤에 온다 — 그래야 동일 특이도에서 Tailwind 유틸이
+   퍼블 클래스를 이기고, §5.6 규칙 3("한 요소에 두 체계를 섞지 않는다")을 어겨도
+   결과가 예측 가능해진다. */
+@tailwind utilities;

@@ -1,0 +1,638 @@
+/* 이 파일의 책임: 퍼블 CSS를 고치지 않고 덧대는 우리 확장분(§8.1).
+   퍼블 반입본(src/styles/publish/*)은 읽기 전용에 준하므로(§5.6 규칙 4) 새 규칙은 여기에 둔다.
+   index.css 는 규칙을 갖지 않는 @import 매니페스트이므로 거기에 직접 쓰지 않는다.
+
+   ── .data_toolbar_actions ─────────────────────────────────────────────────
+   퍼블 `.data_toolbar`는 justify-content:space-between 2요소 구조라
+   "다음 단계로 보내기"(자료관리 파이프라인 승급)의 자리가 없다.
+   직계 자식을 2개로 유지하기 위해 우측을 래퍼 하나로 묶는다 —
+   `.data_toolbar .data_delete_btn` 등이 전부 자손 선택자라 래퍼 안에서도 그대로 걸린다. */
+.data_toolbar_actions { display: flex; align-items: center; gap: 0.4rem; }
+
+/* ── .data_promote_btn ──────────────────────────────────────────────────────
+   삭제 버튼과 구분되도록 아웃라인형으로 하되 높이·radius·폰트는 옆의 삭제 버튼과 맞춘다.
+   퍼블 기성 .btn_sm은 1.75rem/0.7rem이라 삭제 버튼(2rem/0.8rem)과 어긋나 쓸 수 없다. */
+.data_promote_btn { height: 2rem; padding: 0 0.8rem; border-radius: 0.25rem; font-size: 0.8rem; font-weight: 500; }
+.data_promote_btn:disabled { border-color: #999; color: #999; cursor: not-allowed; }
+
+/* ── .search_mode(_btn|_popover) ──────────────────────────────────────────
+   SearchModeToggle.jsx — 퍼블에 없는 자체 설계 위젯이라 CSS가 아예 없었다
+   (round06e 리뷰 지적3). 팝오버를 문서 흐름 그대로 두면 두 곳에서 레이아웃이 깨진다:
+   `intro_search_box`는 고정 높이가 없어 팝오버가 열릴 때 박스 자체가 늘어나 아래
+   콘텐츠를 밀어내고, `result_query_bar`는 고정 `height:3.2rem`이라 팝오버가 그 아래
+   `page_tabs` 내비게이션 위로 흘러넘쳐 겹친다. 그래서 문서 흐름을 밀지 않도록 띄운다 —
+   컨테이너를 relative 기준으로 두고 팝오버를 absolute로 뺀다.
+   z-index 20은 같은 성격의 기존 소형 absolute 드롭다운(`.history_menu`, layout.css)과
+   맞추면서 모달급 레이어(`.dim` 101 · `.alert_popup`/`.detail_popup` 102)보다는
+   확실히 낮게 잡은 값이다 — 모달이 함께 떠도 팝오버가 그 위를 덮지 않는다. */
+.search_mode { position: relative; margin-left : 0 }
+.search_mode_btn { flex-shrink: 0; width: 1.6rem; height: 1.6rem; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(0, 0, 0, .12); border-radius: 0.4rem; background: #fff; color: var(--primary); font-size: 1rem; line-height: 1; cursor: pointer; padding-bottom : 3px  }
+.search_mode_popover { position: absolute; top: calc(100% + 0.4rem); left: 0; z-index: 20; display: flex; flex-direction: column; gap: 0.4rem; padding: 0.6rem 0.8rem; background: #fff; border: 1px solid rgba(0, 0, 0, .12); border-radius: 0.5rem; box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, .12); white-space: nowrap; }
+
+/* round06e 갈래 B — ComingSoon.jsx 래퍼. 퍼블에 준비중 전용 화면이 없어 자체 설계다
+   (spec §1.4 #6). .mng_main/.library_main 은 flex-direction:column 컨테이너이고
+   (layout.css:175,181) 그 부모 .mng_wrap/.library_wrap 은 min-height:100vh 라
+   main 이 뷰포트 전체 높이로 늘어난다 — 이 래퍼가 flex:1 로 그 안에서 세로 중앙정렬된다. */
+.coming_soon_view {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  text-align: center;
+}
+
+/* round06e H — .lnb_history 스크롤 컨테이너(퍼블 대비 의도된 편차, css-contract.test.js 등재).
+   퍼블 원본(layout.css)의 .lnb_history{flex:1 1 0; min-height:0}에는 overflow-y가 없어,
+   "기록 더 보기"로 누적하면 목록이 부모 높이를 넘어 하단 .lnb_profile을 화면 밖으로 밀어낸다.
+   min-height:0이 이미 있으므로 overflow-y:auto만 더하면 플렉스 박스가 자기 몫의 높이 안에서
+   스스로 스크롤한다(.lnb_profile은 형제 요소라 밀리지 않는다). */
+.lnb_history { overflow-y: auto; }
+
+/* round06e H — "기록 더 보기"(R6E-12). 퍼블에 없는 자체 설계(케밥이 이미 aria-label="더보기"를
+   점유해 새 버튼은 다른 접근명을 쓴다). */
+.lnb_history_more_btn {
+  width: 100%;
+  padding: 0.4rem 0;
+  font-size: 0.7rem;
+  color: var(--gray70);
+  text-align: center;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.lnb_history_more_btn:hover {
+  color: var(--primary);
+}
+
+/* round06f 갈래 B — AI 브리핑 로딩 스켈레톤. 퍼블은 본문이 채워진 완성 상태만 그려서
+   (spec §1.4 #5) 로딩 표현이 아예 없다 — 자체 설계라 여기에 둔다.
+   본문(.ai_brief_body)이 들어올 자리를 그대로 차지해야 브리핑이 도착할 때 화면이 튀지
+   않으므로, 상단 여백(1.2rem)과 줄 높이(0.8rem × line-height 1.6 ≒ 1.28rem)를 퍼블 본문
+   규칙에서 그대로 가져와 맞춘다. 마지막 줄만 60% 폭으로 줄여 "문단"처럼 보이게 한다.
+   Spinner.jsx 와 달리 회전 애니메이션을 쓰지 않는다 — 카드 안 3줄짜리 자리표시자라
+   움직이면 오히려 본문보다 시선을 끈다(prefers-reduced-motion 예외 처리도 불필요).
+   소비처: pages/results/AiBriefCard.jsx(div.ai_brief_skeleton > span 3개, className 없이
+   자식 span 을 그리므로 아래는 자손 선택자로 잡는다 — JSX 실측과 대조 완료). */
+.ai_brief_skeleton {
+  margin-top: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.ai_brief_skeleton span {
+  display: block;
+  height: 0.8rem;
+  border-radius: 0.2rem;
+  background: rgba(0, 0, 0, .06);
+}
+.ai_brief_skeleton span:last-child {
+  width: 60%;
+}
+
+/* round06f R6F-25 — "이름 바꾸기" 인라인 입력. 퍼블에 없는 자체 설계(케밥에 새 메뉴 항목을
+   추가하며 함께 생긴 위젯이라 퍼블 원본 CSS에는 대응 규칙이 없다). .lnb_history_link
+   버튼 자리를 그대로 맞바꿔 넣으므로 flex:1 1 auto·min-width:0을 그대로 물려받아
+   .lnb_history_item의 좌우 배치를 흐트러뜨리지 않는다. 글자 크기·색은 옆의
+   .lnb_history_txt(0.7rem, #333)와 맞추고, 테두리만 --primary로 얇게 둘러 "지금 편집
+   중"임을 표시한다. */
+.lnb_history_rename_input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.1rem 0.3rem;
+  border: 1px solid var(--primary);
+  border-radius: 0.2rem;
+  background: #fff;
+  font-size: 0.7rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #333;
+}
+.lnb_history_rename_input:focus {
+  outline: none;
+}
+
+/* round06f R6F-27 — 검색 흐름 하위 탭 게이팅(결과기반 AI 대화·산출물생성). 퍼블에는
+   이 상태가 없어 자체 설계다. pointer-events는 걸지 않는다 — 클릭 무력화는 이미
+   SearchFlowLayout.jsx의 onClick(e.preventDefault)이 전담하므로, 여기서 또 걸면
+   "클릭이 막히는 이유"가 CSS·JS 두 곳으로 갈라진다(판정은 한 곳). */
+.page_tabs_link[aria-disabled="true"] {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+/* round07b-ext task-11 — 산출물 목록(OutputList.jsx·OutputCard.jsx). 피그마 디스크립션
+   5·5-1~5-5에 대응하는 화면이나 퍼블(publish-v2)에는 이 화면 자체가 없다(node_result_panel
+   자리를 대신하는 신규 화면 — OutputTab.jsx 주석 참조) — 그래서 기존 node_* 계열 색상·
+   여백 어휘(#E2E5EE 테두리·#8A90A2 보조텍스트·var(--primary))를 그대로 이어 쓰되,
+   선택자는 전부 이 파일에 새로 정의한다.
+
+   [S] output_list — 상단 탭·검색부터 하단 페이지네이션까지 화면 전체 골격 */
+.output_list { display: flex; flex-direction: column; gap: 1rem; width: 100%; }
+.output_list_head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.output_list_tabs { display: flex; gap: 0.4rem; }
+.output_list_tab { height: 2rem; padding: 0 0.9rem; border: 1px solid #E2E5EE; border-radius: .5rem; background: #fff; font-size: 0.8rem; font-weight: 600; color: #8A90A2; }
+.output_list_tab.is_active { border-color: var(--primary); background: var(--primary); color: #fff; }
+.output_list_search { width: 16rem; max-width: 100%; height: 2rem; padding: 0 0.8rem; border: 1px solid #E2E5EE; border-radius: 0.4rem; font-size: 0.8rem; color: #1A1F2B; background : url('/src/assets/icons/ic_search.svg') no-repeat right .5rem center }
+
+/* 총건수·신규건수 — 「신규」가 이 화면의 정본 상태다(opened_at). 보라(--primary와는 별개로
+   is_new 카드 테두리와 같은 톤)로 눈에 띄게 하되, 색만 다르고 레이아웃은 총건수와 대칭이다. */
+.output_list_counts { display: flex; align-items: center; font-size: 0.8rem; font-weight: 600; color: #333; align-items: center; }
+.output_list_counts span b { color : #1B6FFF; display : inline-block; margin : 0 .2rem }
+.output_list_counts span + span:before { content : ''; width : 1px; height : 15px; background-color : #999999; display : inline-block; margin : 0 .4rem; position : relative; top : 2px }
+.output_list_counts span:last-child b { color: #7C3AED; }
+
+.output_list_toolbar { display: flex; align-items: center; justify-content: space-between; gap : 1rem }
+.output_list_selectall { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: #5A6173; cursor: pointer; }
+.output_list_toolbar > button { height: 2rem; padding: 0 0.9rem; border: 0; border-radius: 0.4rem; background: #1B6FFF; color: #fff; font-size: 0.8rem; font-weight: 600; display : flex; align-items : center; gap : .2rem  }
+.output_list_toolbar > button span { display : inline-flex; width : 16px; height : 16px; background-color : #fff; color : #1b6fff; border-radius : 100%; justify-content : center; align-items : center; font-size : .6rem; line-height : 1}
+.output_list_toolbar > button:disabled { background: #E2E5EE; color: #999; cursor: not-allowed; }
+
+.output_list_grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 1rem; }
+.output_list_empty { padding: 2.4rem 0; text-align: center; font-size: 0.8rem; color: #8A90A2; }
+
+.output_list_pagination { display: flex; align-items: center; justify-content: center; gap: 1rem; padding-top: 0.4rem; }
+.output_list_pagination button { width: 1.8rem; height: 1.8rem; border: 1px solid #E2E5EE; border-radius: 0.4rem; background: #fff; font-size: 0.9rem; color: #333; }
+.output_list_pagination button:disabled { color: #ccc; cursor: not-allowed; }
+.output_list_pagination_page { font-size: 0.8rem; font-weight: 600; color: #333; }
+/* round07f — 페이지네이션 번호형(그리드 열 수는 무변 — spec §5가 범위 밖으로 못박았다). */
+.output_list_pagination_num { width: 1.8rem; height: 1.8rem; border: 1px solid #E2E5EE; border-radius: 0.4rem; background: #fff; font-size: 0.8rem; color: #333; }
+.output_list_pagination_num.is_active { background: #2563EB; border-color: #2563EB; color: #fff; font-weight: 700; }
+.output_list_pagination_gap { color: #999; font-size: 0.8rem; padding: 0 0.2rem; }
+/* [E] output_list */
+
+/* [S] output_card — 산출물 목록 카드 (round07b-ext, 퍼블 미존재·피그마 신규)
+   신규는 보라 테두리, 선택은 파란 테두리+배경(디스크립션 5-5). */
+.output_card { display: flex; flex-direction: column; gap: 0.6rem; border: 1px solid #E2E5EE; border-radius: 0.75rem; padding: 1rem; background: #fff; }
+.output_card.is_new { border-color: #7C3AED; }
+.output_card.is_selected { border-color: #2563EB; background: #F0F6FF; }
+.output_card_head { display: flex; align-items: center; gap : .5rem }
+.output_card_kind { padding: 0.15rem 0.6rem; border-radius: .2rem; background: #ECF2FE; font-size: 0.7rem; font-weight: 500; color: #0B50D0; }
+.output_card_kind.caption { background: #F0F6FF; color: #2563EB; }
+.output_card_kind.exhibition { background: rgba(35, 154, 57, 0.2); color: #239A39; }
+
+.output_card_tit { font-size: 0.85rem; font-weight: 700; color: #1A1F2B; line-height: 1.4; }
+.output_card_body { font-size: 0.75rem; line-height: 1.6; color: #5A6173; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+.output_card_foot { display: flex; align-items: center; gap: 0.6rem; }
+.output_card_date { flex: 1 1 0; min-width: 0; font-size: 0.7rem; color: #999; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.output_card_foot + .output_card_foot { justify-content : end; }
+.output_card_foot button { display: flex; align-items: center; gap: 0.25rem; height: 1.7rem; font-size: 0.7rem; font-weight: 600; color: #333; }
+/* [E] output_card */
+
+/* ── node_detail_tree_sub_item — 선택/보기 분리 + 미공개 점 (round07b-ext) ──
+   퍼블 마크업은 자료명이 `.form_check_label` **안에** 있어 label-for 전달로
+   이름 클릭이 체크를 토글한다. 우리는 둘을 갈랐다(체크=담기 / 이름=보기)므로
+   자료명이 `.form_check` 의 형제가 된다. 퍼블은 `.form_check` 에 flex:1 1 0 을
+   줘 행을 독차지하게 했는데, 이제 폭은 자료명이 가져가야 한다.
+
+   미공개 점(●)은 **퍼블에 없다** — 피그마 신규 요소라 여기서 만든다.
+   `is_public === false` 일 때만 찍는다(null=모름은 표시 없음). */
+.node_detail_tree_sub_item .form_check { flex: 0 0 auto; }
+.node_detail_tree_sub_item .form_check .form_check_label { width: auto; }
+.node_detail_tree_sub_item_label {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+.node_detail_tree_sub_item_label[aria-current="true"] { color: var(--primary); font-weight: 600; }
+.node_item_private_dot {
+  flex: 0 0 auto;
+  width: 0.35rem;
+  height: 0.35rem;
+  margin-left: 0.3rem;
+  border-radius: 50%;
+  background: #f90;
+  display: inline-block;
+}
+.node_item_private_legend {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.1rem 0.35rem;
+  font-size: 0.65rem;
+  color: #8a90a2;
+}
+
+/* [S] 산출물 원문 뷰어 — round07f Task 6 (OutputViewer.jsx)
+   툴바 마크업/CSS는 round07b-ext의 .node_detail_viewer_* 를 그대로 재사용한다.
+
+   그런데 퍼블의 .node_detail_viewer 는 **이미지 뷰어**용 다크 크롬이다
+   (component.css: background:#333 · width:33.2rem 고정 · 본문 2단 flex).
+   산출물 뷰어가 그 안에 그리는 것은 이미지가 아니라 **문서**라서 글자가 검다
+   (설명문 #1A1F2B · 표 데이터 셀은 body 상속 #1A1A1A). 그대로 재사용하면 검은
+   글자가 #333 위에 얹혀 읽히지 않고, 664px 고정폭 상자가 상세 화면 한가운데
+   박힌다(R1 Critical).
+
+   퍼블 원본(styles/publish/component.css)은 납품물이므로 **손대지 않는다**.
+   대신 산출물 전용 수식 클래스 .ty_output 을 하나 두고 여기서만 덧쓴다 —
+   NodeModal 의 이미지 뷰어는 이 클래스를 붙이지 않으므로 영향이 없다. */
+.node_detail_viewer.ty_output {
+  /* 33.2rem 고정 해제 — 상세 화면(가변 폭 flex 컬럼)의 한 칸을 채운다.
+     퍼블은 우측에 번역 패널이 붙어 왼쪽만 둥글었다. 여기선 홀로 서므로 네 귀. */
+  width: 100%;
+  border-radius: 0;
+}
+.node_detail_viewer.ty_output .node_detail_viewer_main {
+  /* 문서 표면은 밝게 — 툴바(.node_detail_viewer_bar)는 부모의 #333 위에 그대로
+     두어 흰 아이콘·흰 글자가 계속 보인다. 바꾸는 건 본문 한 겹뿐이다. */
+  background: #fff;
+  color: #1A1A1A;
+  /* 퍼블은 「썸네일 | 프리뷰」 2단이라 flex 다. 산출물 본문은 문서 한 덩어리이므로
+     block 으로 되돌린다. 덤이 하나 있다 — flex 아이템은 shrink-to-fit 이라 자식의
+     폭이 컨테이너 폭과 무관해지는데, 그것이 「화면 맞춤」 측정을 망가뜨리던 원인
+     중 하나였다(R1 Important 2 ②). */
+  display: block;
+  /* padding 0.8rem 도 뺀다 — 무엇보다 clientWidth 가 「자식이 쓸 수 있는 폭」과
+     같아져야 화면 맞춤이 성립한다(같은 항목 ①).
+
+     (R1 재리뷰 Minor F 정정) 예전 주석은 "본문(CaptionDocument p-6 / ExhibitTable p-2)이
+     제 여백을 갖고 있어 이중"이라고 썼는데 틀렸다 — 이 프로젝트 tailwind.config.js는
+     1단위=1px 스케일이라(파일 머리 주석) p-6=6px · p-2=2px 뿐이라, 부모의 0.8rem(16px)을
+     빼면 이중 제거가 아니라 여백 순감이다(CaptionDocument 16+6=22px→6px,
+     ExhibitTable 16+2=18px→2px) — 스크린샷 실측에서 흰 문서가 다크 크롬에 거의
+     붙어 보인 것이 이 탓이다. clientWidth 정정(위 근거)은 그대로 두고, 뺀 16px을
+     본문 쪽 자체 패딩으로 되돌렸다 — CaptionDocument p-6→p-24(24px) ·
+     ExhibitTable p-2→p-16(16px, 둘 다 OutputViewer.jsx). */
+  padding: 0;
+  /* 세로 스크롤바 자리를 늘 비워 둔다. 그러지 않으면 화면 맞춤이 한 번에 못 맞는다 —
+     배율을 키운 순간 세로 스크롤바가 생기며 clientWidth 가 방금 계산에 쓴 값보다
+     10px 줄어들어, 그만큼 가로로 넘친다(실측). 자리를 고정하면 분자가 상수가 된다. */
+  scrollbar-gutter: stable;
+}
+/* 배율 래퍼. 퍼블에 없는 신규 요소다(퍼블의 뷰어는 이미지를 img 하나로 그렸다).
+   - zoom: transform:scale과 달리 **레이아웃을 다시 흘린다**. 실측(1500×950, 12열 표):
+     scale(0.61)은 스크롤 폭을 1759px 그대로 남겨 「화면 맞춤」 뒤에도 빈 가로 스크롤이
+     680px 남았고, zoom 0.61은 1078px(=컨테이너 폭)로 정확히 떨어졌다.
+   - width:max-content: 이 래퍼가 「내용의 폭」이어야 화면 맞춤의 분모가 성립한다.
+     블록 기본값(=컨테이너 폭)이면 비율이 늘 1이 되어 버튼이 아무 일도 하지 않는다. */
+.node_detail_viewer.ty_output .node_detail_viewer_doc {
+  zoom: var(--doc-zoom, 1);
+  width: max-content;
+}
+
+/* 배율 표시 — 퍼블 원본은 .node_detail_viewer_zoom(dropdown_box 셀렉트)이었는데,
+   이 뷰어는 목록이 아니라 현재 배율을 글자로만 보여 주므로 별도 규칙을 둔다.
+   색은 퍼블의 같은 자리(component.css .node_detail_viewer_zoom .dropdown_box_value)와
+   같은 #fff 다 — 툴바 배경이 #333 이라 #333 글자는 보이지 않는다(R1 Important 4). */
+.node_detail_viewer_zoom_value { font-size: 0.75rem; font-weight: 600; color: #fff; min-width: 2.4rem; text-align: center; }
+
+/* [S] 대한민국사 원문 뷰어 — round11a task-10 (ChronologyViewer.jsx)
+   피그마 W2mzOqDBRKgVrVW5iiEd8i · 988:7897(우측 패널) · 988:6277(2단 전체).
+
+   위 .ty_output 과 **같은 이유·같은 방식**이다 — 퍼블의 .node_detail_viewer 는
+   이미지 뷰어용 다크 크롬(#333)인데, 이 패널의 툴바는 시안에서 **#AEAEAE** 다.
+   퍼블 원본(styles/publish/component.css)은 납품물이라 손대지 않고, 우측 전용
+   수식 클래스 .ty_chronology 로 여기서만 덧쓴다. 글자·아이콘은 퍼블 그대로
+   흰색이라(component.css .node_detail_viewer_name) 다시 적지 않는다. */
+.node_detail_viewer.ty_chronology {
+  /* 33.2rem 고정 해제 — 2단 레이아웃의 한 칸을 채운다(좌우 같은 폭, 시안 740:740). */
+  width: 100%;
+  border-radius: 0;
+}
+.node_detail_viewer.ty_chronology .node_detail_viewer_bar {
+  /* 피그마 실측. 좌측 「산출물」 툴바의 검정(#000)과 구별되는 자리다. */
+  background: #AEAEAE;
+}
+.node_detail_viewer.ty_chronology .chronology_main {
+  /* 퍼블은 「썸네일 | 프리뷰」 2단이라 flex 다. 여기는 스캔 쪽 한 장이므로
+     block 으로 되돌린다(.ty_output 과 같은 이유). 배경은 스캔 종이가 흰색이라
+     이어지도록 흰색으로 둔다. */
+  display: block;
+  padding: 0;
+  background: #fff;
+  color: #1A1A1A;
+  /* 세로 스크롤바 자리를 늘 비워 둔다 — 가로 맞춤이 한 번에 맞으려면 분자
+     (clientWidth)가 상수여야 한다(.ty_output 과 같은 근거). */
+  scrollbar-gutter: stable;
+}
+
+/* 안내 한 줄 — 「스캔 이미지가 없습니다」·「연표에 없는 시대입니다」 등.
+   좌측 뷰어의 안내(OutputViewer.jsx 의 text-[13px] text-[#5A6173] p-6)와 같은
+   결이다. 조용한 빈 칸 대신 언제나 사유가 그 자리에 남는다(코딩표준 §6). */
+.chronology_notice { padding: 1.2rem; font-size: 0.65rem; color: #5A6173; text-align: center; }
+
+/* 배율 래퍼. 이미지와 사건 상자가 **같은 상자** 안에 있어야 확대·축소가
+   둘에 똑같이 걸린다.
+
+   zoom 을 쓰는 이유는 좌측 뷰어(.ty_output .node_detail_viewer_doc)와 같다 —
+   transform:scale 은 레이아웃을 다시 흘리지 않아 스크롤 영역이 원래 크기로
+   남는다.
+
+   ⚠️ 래퍼는 **언제나 이미지 상자와 같은 크기**여야 한다. 사건 상자가 퍼센트
+   좌표(bbox 0.0~1.0)로 놓이므로, 래퍼가 이미지보다 넓으면 상자가 통째로
+   어긋난다. `width: max-content` + 원본 크기 이미지가 그것을 보장한다
+   (브라우저 실측: 배율 10·21·33·50·100·200% 전부에서 래퍼 = 이미지, bbox
+   left 10.00% · width 50.00%).
+
+   [round11a task-10 1차 수정 HIGH-2] 예전에는 맞춤 3종마다 래퍼·이미지의 폭
+   규칙을 갈랐다(.ty_fit_width 는 둘 다 width:100%). **퍼센트 폭과 zoom 을 한
+   요소에 같이 두면 안 된다** — 퍼센트는 줌이 안 걸린 부모를 기준으로 풀린 뒤
+   다시 줌이 걸려 두 배가 상쇄된다. 실측(패널 안폭 725 · 원본 2194×3042):
+   배율 50%·100%·200% 에서 렌더 폭이 **전부 725.00px** 로 같았다. 세로 맞춤의
+   height:100% 는 조상에 확정 높이가 없어 auto 로 풀려 1:1 과 같은 2194×3042 를
+   냈다. 바로 위 .ty_output 주석이 이미 같은 함정을 적어 두었다 —
+   「블록 기본값(=컨테이너 폭)이면 비율이 늘 1이 되어 버튼이 아무 일도 하지 않는다」.
+
+   그래서 맞춤은 CSS 가 아니라 **배율을 재서** 한다(ChronologyViewer.fitZoom —
+   좌측 fitWidth 와 같은 식). 여기 규칙은 모드와 무관하게 하나뿐이다. */
+.chronology_page {
+  position: relative;
+  display: block;
+  margin: 0 auto;
+  zoom: var(--chrono-zoom, 1);
+  /* 내용(=이미지)의 폭. 이 한 줄이 「배율이 실제로 걸린다」와 「래퍼 = 이미지」를
+     동시에 만든다(좌측 .node_detail_viewer_doc 과 같은 근거). */
+  width: max-content;
+}
+/* 이미지는 언제나 **원본 크기**다 — 크기를 바꾸는 것은 위 zoom 하나뿐이다.
+   max-width:none 이 필요한 이유: 퍼블·Tailwind 의 전역 img 규칙이 max-width:100%
+   를 걸면 원본보다 좁아져 배율의 분모(naturalWidth)와 렌더 폭이 갈린다. */
+.chronology_page_img { display: block; width: auto; height: auto; max-width: none; }
+
+/* 사건 영역(bbox) 오버레이.
+   보기 모드에서는 **클릭 대상이 아니다**(브리프 ②) — 커서도 호버도 포커스도
+   주지 않는다. pointer-events:none 이라 스캔 쪽 위에서 마우스가 그냥 지나간다.
+   붙이기(task-11)가 켜지는 자리가 .is_pickable 이다. */
+.chronology_event { position: absolute; pointer-events: none; }
+.chronology_event.is_pickable {
+  pointer-events: auto;
+  cursor: pointer;
+  padding: 0;
+  border: 0;
+  border-radius: 0.1rem;
+  background: transparent;
+}
+/* 누를 수 있는 상태에서만 테두리가 뜬다 — 투명한 버튼을 눌러야 하는 사용자가
+   어디를 누를지 알 수 있어야 한다(보기 모드에는 이 규칙이 걸리지 않는다). */
+.chronology_event.is_pickable:hover,
+.chronology_event.is_pickable:focus-visible {
+  outline: 2px solid #00B975;
+  outline-offset: 1px;
+  background: rgba(0, 185, 117, .12);
+}
+
+/* round07f — 인쇄는 뷰어 본문만 남긴다(spec §3.3). window.print() 만으로는 탭줄·
+   검색바·다운로드 버튼까지 전부 종이에 실린다. 프로젝트 어디에도 @media print 가
+   없어(실측: styles/ 전체 0건) 이 블록이 유일한 인쇄 규칙이다.
+
+   **범위는 body.is_printing_output 안으로 한정한다.** 이 파일은 index.css 가
+   전역으로 import 하므로, 선택자를 `body *` 로 열어 두면 뷰어가 없는 화면
+   (/library · /manage/* · /admin/* …)에서 Ctrl+P 를 눌렀을 때 되살릴 요소가
+   하나도 없어 **백지**가 나온다(R1 Important 1). 클래스는 OutputViewer 가
+   beforeprint 에 붙이고 afterprint 에 뗀다 — 이벤트를 지원하지 않는 브라우저에서는
+   규칙이 아예 적용되지 않아 「화면 전체가 인쇄」로 안전하게 퇴화한다.
+
+   display:none 대신 visibility 를 뒤집는 이유: 조상 사슬을 하나하나 되살릴 필요가
+   없다(감춘 조상 안의 자손만 다시 보이게 하면 된다). 뷰어 본문은 스크롤 컨테이너라
+   max-height·overflow 를 함께 풀어야 화면 밖 내용까지 인쇄된다 — max-height 는
+   JSX 인라인 스타일이므로 !important 가 있어야 이긴다. 툴바는 종이에 의미가 없어
+   아예 뺀다. */
+@media print {
+  body.is_printing_output * { visibility: hidden; }
+  body.is_printing_output .node_detail_viewer_main,
+  body.is_printing_output .node_detail_viewer_main * { visibility: visible; }
+  body.is_printing_output .node_detail_viewer_main {
+    position: absolute; left: 0; top: 0; width: 100%;
+    max-height: none !important; overflow: visible !important;
+  }
+  body.is_printing_output .node_detail_viewer_bar { display: none; }
+}
+/* [E] 산출물 원문 뷰어 */
+
+/* round10b Task A — 노드 상세 모달(NodeModal.jsx) 두 결함.
+   퍼블 원본(component.css)은 고치지 않는다 — 여기(확장)에서 속성만 덧댄다.
+
+   ① .node_detail_viewer_name — 긴 파일명 말줄임.
+   component.css:1002는 white-space:nowrap만 주고 min-width/overflow는 안 준다. 부모
+   .node_detail_viewer_bar(component.css:1001)가 gap 1.4rem인 flex 행이라, 파일명이 길면
+   flex item 기본값 min-width:auto가 줄어들기를 거부해 자기 자신이 넘치거나 오른쪽
+   툴바(node_detail_viewer_tools)를 밀어낸다. min-width:0으로 그 기본값을 풀고
+   overflow:hidden으로 넘치는 부분을 자른다. 아이콘(node_detail_viewer_name_icon)은
+   이미 flex-shrink:0(component.css:1003)이라 그대로 유지 — 줄어드는 건 텍스트 쪽뿐이다.
+
+   재리뷰 M-3 — text-overflow:ellipsis를 .node_detail_viewer_name 자신에 걸어 두었었는데
+   **"…"가 뜨지 않았다.** component.css:1002가 이 클래스를 display:flex로 만들기
+   때문이다(아이콘+파일명을 가로로 배치하려고) — text-overflow는 inline formatting
+   context를 스스로 세우는 컨테이너(보통 block)에서만 자기 넘치는 인라인 내용을
+   "…"로 자른다. flex 컨테이너는 그 조건을 못 채워 잘리기는 해도 말줄임표가 안
+   붙는다(파일명이 그냥 뚝 끊긴다). 그래서 파일명 텍스트를 별도
+   .node_detail_viewer_name_text로 감싸 그 요소에 옮긴다 — <span>은 원래 inline이지만
+   flex item이 되면 자동으로 blockify되므로(CSS Display §2.7) ellipsis가 정상 동작한다.
+   white-space:nowrap은 부모(component.css:1002)에서 상속되지만, 마크업이 바뀌어도
+   깨지지 않도록 여기서도 명시한다. component.css:1002가 이 속성들 중 어느 것도
+   선언하지 않으므로(속성 단위 캐스케이드) 명시도 싸움 없이 그대로 적용된다.
+
+   ② .node_detail_trans_sub_head — 스크롤 중 고정되는 소제목.
+   .node_detail_trans_body와 .node_detail_trans_meta(component.css:1049-1051, 두 선택자가
+   한 규칙을 공유)는 overflow-y:auto 스크롤 컨테이너이고, 그 첫 자식이 이 sub_head다.
+   본문을 스크롤하면 "번역정보"·"메타정보" 소제목도 함께 밀려 올라가 사라진다.
+   position:sticky + top:0 으로 스크롤 중에도 상단에 붙이고, z-index:1 로 뒤이어 오는
+   본문 텍스트 위에 그린다. **배경(#fff)을 반드시 함께 준다** — 없으면 sticky 상태에서
+   아래로 스크롤되는 본문 글자가 투명 배경 뒤로 비쳐 보인다. component.css:1052는
+   flex-shrink·display·align-items·justify-content·width만 선언하므로(속성 단위 캐스케이드)
+   여기서 더하는 세 속성(position·background·z-index)도 명시도 싸움 없이 그대로 이긴다.
+   .node_detail_trans_sub_head 클래스를 번역정보·메타정보 두 블록이 함께 쓰므로(NodeModal.jsx)
+   한 규칙으로 둘 다 고쳐진다 — 의도한 결과다. */
+.node_detail_viewer_name { min-width: 0; overflow: hidden; }
+.node_detail_viewer_name_text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.node_detail_trans_sub_head { position: sticky; top: 0; background: #fff; z-index: 1; }
+
+/* round07f — 채팅 입력 바의 「작업선택」 드롭다운(대조표 §4). 대조표 §1-A의 작업선택과
+   같은 규격(회색 placeholder + 실제 항목)이고, 퍼블 v2 component.css 에는 이 자리가
+   없어(실측) 여기 확장으로 둔다. 답변이 하나도 없으면 disabled 라 회색으로 죽인다.
+
+   round07g — 네이티브 <select>(.chat_input_task_select)를 걷어내고 커스텀 리스트박스
+   (components/TaskSelect.jsx)로 바꿨다. 이유는 하나뿐이다: **위로** 펼쳐야 하는데
+   브라우저는 <select> 의 펼침 방향을 지정하게 해 주지 않는다. 입력 바는 화면 맨 아래에
+   붙어 있어(.chat_input_dock) 아래로 열면 목록이 잘리고, 피그마 695-100384 는 패널을
+   입력 바 **위**에 그린다.
+
+   위로 여는 장치가 아래 bottom: calc(100% + 0.4rem) 한 줄이다. top 오프셋을 넣으면
+   그 순간 아래로 내려가므로 css-contract.test.js 가 「bottom 기준이고 top 이 없다」를
+   함께 잠근다. 마크업도 패널을 트리거보다 앞에 두어(TaskSelect.jsx) 이 파일이 통째로
+   죽어도 정상 흐름에서 위에 그려지게 했다 — 두 겹 다 위를 가리킨다. */
+.chat_task_select { position: relative; display: inline-block; }
+.chat_task_select_btn { display: inline-flex; align-items: center; gap: 0.3rem; height: 2.25rem; border-radius: 0.5rem; padding: 0 0.6rem; font-size: 0.8rem; border: 1px solid #E2E5EE; background: #1A1F2B; color: #fff; white-space: nowrap; cursor: pointer; width : 150px; flex-basis: 150px; justify-content: space-between; }
+.chat_task_select_btn img { filter : brightness(0) invert(1); }
+.chat_task_select_btn:disabled { color: #C5CAD6; background: #F7F9FC; cursor: default; }
+.chat_task_select_arrow { width: 0.6rem; height: 0.6rem; flex-shrink: 0; }
+.chat_task_select_panel { position: absolute; bottom: calc(100% + 0.4rem); left: 0; z-index: 20; margin: 0; padding: 0.2rem; min-width: 100%; list-style: none; background: #fff; border: 1px solid #E2E5EE; border-radius: 0.5rem; box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, .12); white-space: nowrap; }
+.chat_task_select_panel:focus { outline: none; }
+.chat_task_select_option { padding: 0.35rem 0.6rem; border-radius: 0.35rem; font-size: 0.8rem; color: #1A1F2B; cursor: pointer; }
+.chat_task_select_option.is_active { background: #F1F4FA; }
+
+.selection_wrap { padding : .5rem; background-color : #EEF2F7; border-radius : .3rem; margin : .6rem 0  }
+
+/* round07j — 홈·검색 히어로 워드마크 아트워크 교체(ArchAI -> SA:I, 피그마 export).
+   layout.css 의 `.intro_wordmark { width: 9.25rem; height: 2.25rem }` 는 옛 아트워크
+   치수(185x45)를 그대로 박아 둔 값이다. 새 아트워크는 103x45 라 그 폭이 안 맞는다.
+
+   폭을 새 숫자로 바꿔 적지 않고 **auto 로 연다** — 아트워크가 또 바뀌면 숫자를
+   따라 고쳐야 하는데, 그 갱신을 빠뜨리면 글자가 상자 안에서 치우친다. height 만
+   고정하고 폭은 SVG 의 viewBox 비율이 정하게 두면 그 갱신 자체가 필요 없다.
+   (layout.css 는 퍼블 반입본이라 읽기 전용에 준한다 — 여기서 덮는다.) */
+.intro_wordmark { width: auto; }
+
+/* round07m — 검색결과 카드 종류 뱃지 중 퍼블에 색이 없는 둘. 퍼블 component.css:441-444 는
+   이미지·영상·도서·웹콘텐츠 4색뿐이다. 원천 어휘의 음원·기타를 여기서 정의한다(spec 디자인
+   참조 (c)). 배경 알파 .12 는 퍼블 4색과 같은 규칙을 따른다.
+   음원 — 옛 더미 유형 태그(TYPE_TAG 「음성」)가 쓰던 녹색을 옮겼다.
+   기타 — 분류가 아닌 나머지라 채도 없는 중립색이다(--gray70, tokens.css). */
+.tag.ty_audio { background: rgba(45, 122, 58, .12); color: #2D7A3A; }
+.tag.ty_etc { background: rgba(0, 0, 0, .06); color: var(--gray70); }
+
+/* ── 비활성(disabled) 기본 표시 ─────────────────────────────────────────────
+   round10a T1 — 퍼블 `.btn` 에는 `:disabled` 규칙이 **아예 없었다**(common-kept.css:38
+   정의부 확인). 그래서 `btn_primary` + `disabled` 조합이 파란색 그대로 남고, 라이브에서
+   「눌리는 줄 알고 눌렀는데 아무 일도 없는」 버튼이 여럿 나왔다(만족도 제출 · 세 생성 모달).
+
+   화면마다 `opacity-40 cursor-not-allowed` 를 기억해서 붙이는 방식은 실패했다 — 잊은 곳이
+   그대로 활성처럼 보이기 때문이다. 그래서 **기본을 여기서 댄다** — 다만 이 기본은
+   **`.btn` 클래스가 붙은 요소에만** 닿는다(선택자가 `.btn:disabled`다). 값은 이미 옳게
+   동작하던 `.output_list_toolbar > button:disabled`(아래 :150)와 같은 어휘다.
+
+   [닿지 않는 곳 — round10a 최종 전브랜치 리뷰 M-2, 위 문단이 "화면마다 기억해서 붙이는
+   방식은 실패했다 → 그래서 기본을 여기서 댄다"라고만 적어 마치 이 기본이 모든 화면을
+   덮는 것처럼 읽혔다. 사실은 절반만 참이다 — `components/Button.jsx`(순수 Tailwind, `.btn`
+   클래스를 붙이지 않는다)로 렌더된 버튼은 disabled여도 이 규칙을 못 받아 활성과 구분되지
+   않는다: `Account.jsx:85`(비밀번호 변경) · `Accounts.jsx:196-214`(승인/거절/차단/
+   차단해제/삭제/임시비번). `PasswordModal.jsx:54·61` · `SaveProjectModal.jsx:75·82`는
+   각자 `disabled:opacity-40/50 disabled:cursor-not-allowed`를 따로 갖고 있어 안 보이는
+   정도는 아니지만 「반투명 파랑」이라 이 기본의 어휘(회색 배경 + 회색 글자, Global
+   Constraint)와 다르다. `Button.jsx`에 `.btn`을 붙이거나 그 disabled 스타일을 이 어휘로
+   맞추는 것은 이번 라운드 범위 밖으로 남긴다 — 네 화면 각각의 실제 렌더 결과를 확인하지
+   않고 새 규칙만 얹으면 이 라운드 T1이 겪은 것과 같은 종류의 사고(캐스케이드는 규칙
+   단위가 아니라 속성 단위라 기존 규칙이 선언 안 한 속성을 새 규칙이 가져간다 — 아래
+   「되찾기」 규칙 참조)가 다시 날 수 있어서다. 판단 근거: final-fix-C-report.md.]
+
+   기존 규칙과 충돌하지 않는다(명시도 실측 — round10a 리뷰로 정정, 아래 두 항목 참조):
+     .data_toolbar .data_delete_btn:disabled   0,3,0  → 더 강하다. background 는 그대로 이긴다.
+                                                          단 color 는 이 규칙이 선언하지 않아
+                                                          따로 경쟁한다 — 아래 「되찾기」 규칙 참조.
+     .output_list_toolbar > button:disabled    0,2,1  → 더 강하다
+     .output_list_pagination button:disabled   0,2,0  → 동률이나 그 요소는 .btn 을 겸하지 않는다
+     .chat_task_select_btn:disabled            0,2,0  → 같음 — .btn 이 아니다
+     .data_promote_btn:disabled                0,2,0  → **동률.** .btn 을 겸한다(btn btn_outline_primary
+                                                          data_promote_btn). 동률이면 파일 뒤쪽(이 규칙)이
+                                                          이긴다 — border-color 는 #999 → #E2E5EE 로,
+                                                          background 는 무지정(→ .btn_outline_primary 의
+                                                          #fff) → #E2E5EE 로 덮인다. color 는 두 규칙 다
+                                                          #999 라 값이 같아 안 보이지 않는다. 흰 바탕에
+                                                          회색 윤곽선이던 것이 옅은 회색 채움으로 바뀌지만
+                                                          「회색 배경 + 회색 글자」(Global Constraint)에
+                                                          더 가까워지는 방향이라 그대로 둔다 — 되돌리려면
+                                                          .data_promote_btn:disabled 쪽에 더 높은 명시도가
+                                                          필요하다(round10a 리뷰 Important, 판단 근거는
+                                                          task-1-report.md). */
+.btn:disabled { background: #E2E5EE; border-color: #E2E5EE; color: #999; cursor: not-allowed; }
+
+/* `.data_pagination_arrow` 는 `.btn` 이 아니라 위 규칙이 닿지 않는다(component.css:238).
+   1페이지에서 「첫/이전」이 검정 그대로여서 눌리는 것처럼 보였다. 공용 Pagination.jsx 라
+   검색결과·자료관리·계정·산출물 목록에 전부 걸린다. */
+.data_pagination_arrow:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* round10a T1 리뷰 Critical — 「선택삭제」 글씨가 사라지는 회귀를 고친다.
+   CSS 캐스케이드는 **규칙 단위가 아니라 속성 단위**로 승자를 가린다. 위 `.btn:disabled`를
+   넣기 전, `.data_delete_btn`(class="btn btn_primary data_delete_btn")의 color 를 정하는
+   규칙은 `.btn_primary`(0,1,0, color:#fff) 하나뿐이었다 — component.css:201의
+   `.data_toolbar .data_delete_btn:disabled`(0,3,0)는 background 만 선언하고 color 는
+   선언하지 않기 때문이다. 그런데 `.btn:disabled`(0,2,0, color:#999)가 새로 생기면서
+   `.btn_primary`(0,1,0)를 이겨 color 를 가져갔다 — background #999 + color #999 가 겹쳐
+   글자가 배경과 같은 색이 되어 안 보인다(disabled 시 `.data_delete_count` 배지는
+   component.css:203에서 display:none이라 화면에 남는 건 이 글자 하나뿐이다, 라이브
+   https://sai.landsoft.co.kr/manage/ocr 실측).
+
+   component.css는 퍼블 반입본이라 못 고친다 — 여기서 color 만 되찾는다. `.btn:disabled`
+   (0,2,0)를 반드시 이겨야 하므로 component.css:201과 같은 명시도(0,3,0)로 맞춘다(파일
+   순서와 무관하게 이긴다). 영향: pages/manage/{Ocr,Meta,History,Materials}.jsx ·
+   pages/admin/Nodes.jsx의 「선택삭제」 버튼. 시험: disabled-contract.test.js. */
+.data_toolbar .data_delete_btn:disabled { color: #fff; }
+
+/* ── 읽기 전용 노드 그래프 ────────────────────────────────────────────────
+   round10a 사용자 지시(2026-09-17): 「회색화면 치우고 **그냥 그대로인데 안눌러지도록**」.
+   그래서 노드는 흐리게 만들지 않는다 — 색·테두리·건수 뱃지가 활성과 똑같다.
+   다만 `component.css:668` 의 hover 그림자는 그대로 두면 **반응하는 것처럼** 보인다.
+   눌리지 않는 것이 반응하면 그 자체가 이 라운드가 고치려던 거짓말이므로 여기서 끈다.
+   (`cursor: not-allowed` 는 JSX 가 붙인다 — 상태에 따라 켜지므로 CSS 로 옮길 수 없다.) */
+.node_graph_node:disabled:hover,
+.node_graph_node:disabled:focus-visible { box-shadow: none; }
+
+/* ── .is_locked — 읽기 전용 잠김 ─────────────────────────────────────────
+   사용자 지시(2026-09-17): 「회색으로 하지 말고 그대로 하는데 버튼만 안눌러지는 식으로」.
+
+   위 `.btn:disabled` 는 「지금은 못 누르지만 조건을 채우면 눌린다」를 회색으로 말한다
+   (자료 0건 · 제목 빈칸 등). 읽기 전용은 뜻이 다르다 — **애초에 여기서 만들 수 없는 화면**이고,
+   그 사실은 상단 배너와 패널 안내문이 이미 말한다. 거기에 버튼까지 회색으로 덮으면
+   화면이 통째로 죽은 것처럼 보인다.
+
+   그래서 `is_locked` 는 겉모습을 활성과 똑같이 되돌리고, `disabled` 속성과 not-allowed
+   커서로만 조작을 막는다. 명시도 0,3,0 이라 `.btn:disabled`(0,2,0)를 이긴다. */
+.btn.is_locked:disabled {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  cursor: not-allowed;
+}
+
+/* 같은 이유로 셀렉트도 브라우저 기본 회색화를 되돌린다. */
+select.is_locked:disabled {
+  opacity: 1;
+  background: #fff;
+  color: #1A1F2B;
+  cursor: not-allowed;
+}
+
+/* round10b 재리뷰 M-4 — AiBriefCard.jsx가 고지문(「본 요약은 AI로 생성되었으며…」) +
+   아이콘(ai_brief_notice_icon)을 원래 자리였던 .ai_brief_notice(component.css —
+   display:flex; align-items:center; gap:0.3rem)에서 .ai_brief_desc(component.css —
+   font-size·font-weight·color만 있고 flex가 없다)로 옮겼다(파일 머리주석 round10b 참조).
+   JSX 줄바꿈은 공백 문자가 되지 않으므로 flex 없이는 아이콘과 글자가 그대로 붙는다.
+   .ai_brief_notice_icon의 `top:-1px`(component.css)도 flex 가로 정렬을 전제로 둔
+   보정이라 flex가 없으면 엉뚱하게 어긋난다 — 같은 gap 값으로 원래 자리의 배치를
+   되살린다. component.css:826이 이 두 속성 중 어느 것도 선언하지 않으므로(속성
+   단위 캐스케이드) 명시도 싸움 없이 그대로 적용된다. */
+.ai_brief_desc { display: flex; align-items: center; gap: 0.3rem; }
+
+/* round10c Task B1 #19 — 기획 이슈: 사이드바를 접으면(.lnb.is_collapsed) 프로필 아이콘이
+   가로로 눌린다.
+
+   라이브 실측(2026-09-18, https://sai.landsoft.co.kr, 배포본에 직접 CSS를 주입해 전후를
+   쟀다):
+     .lnb.is_collapsed        width 72px · padding 24px 좌우 → 콘텐츠 폭 24px
+     .lnb_profile             padding 8px 좌우                → 사용가능 폭 8px  ←
+     .lnb_profile_avatar      CSS width 24px 지정 · 원본 40×40 · object-fit: fill
+     실제 렌더                8 × 24 px                                      ← 가로로 3배 눌렸다
+
+   .lnb_profile(layout.css:124)이 접힘 상태에서도 좌우 패딩 8px씩을 그대로 가져가 아바타가
+   들어갈 콘텐츠 폭이 24px 중 8px밖에 남지 않는다.
+
+   [범인은 flex-shrink 가 아니다 — 처음 진단이 틀렸고, 라이브에서 바로잡았다]
+   이 아바타는 layout.css:125 에 이미 flex-shrink:0 이 걸려 있고, 실측해도 그렇다
+   (getComputedStyle → flexShrink "0"). 그런데도 width 가 8px 로 나왔다.
+
+   실제 원인은 **Tailwind preflight 의 `img { max-width: 100% }`**
+   (node_modules/tailwindcss/lib/css/preflight.css:377-379)다. max-width 는 플렉스
+   신축이 끝난 **뒤에** 적용되는 별도의 상한이라, flex-shrink:0 으로 줄지 않기로 해도
+   부모 콘텐츠 폭(8px)의 100% 에서 잘린다. 그래서 「안 줄어들게 한다」로는 못 고치고,
+   **부모가 자리를 내주게** 해야 한다 — 그것이 아래 첫 줄의 padding 0 이다.
+
+   실측:
+     고치기 전   flex-shrink 0 · max-width 100% · 부모 콘텐츠 폭  8px → 렌더  8 × 24
+     고친 뒤     flex-shrink 0 · max-width 100% · 부모 콘텐츠 폭 24px → 렌더 24 × 24
+     펼침(회귀)  40 × 40 · .lnb_profile padding 8px 유지 · 「admin 통합관리자」 정상
+
+   둘째 줄 object-fit:cover 는 고침이 아니라 대비다 — 지금은 원본이 정사각(40×40)이라
+   fill 이어도 결과가 같지만, 비정사각 아바타가 들어오면 fill 은 다시 찌그러뜨린다.
+   접힘 전용이 아니라 전역인데, 펼침 40×40 에 영향이 없음을 위에서 실측했다.
+
+   layout.css:124-125(퍼블 반입본)는 고치지 않는다(CLAUDE.md §2). 여기서 속성만 덧댄다.
+   가운데 정렬은 여기서 다시 쓰지 않는다 — layout.css:132 가 접힘 상태 .lnb_profile 에
+   justify-content:center 를 이미 선언해 뒀다(round10c 전브랜치 리뷰 M6). 실제 고침은
+   아래 padding 한 쌍뿐이다. */
+.lnb.is_collapsed .lnb_profile { padding-left: 0; padding-right: 0; }
+.lnb_profile_avatar { object-fit: cover; }
